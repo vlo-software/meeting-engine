@@ -1,0 +1,14 @@
+services:
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-password}
+    volumes:
+      - meeting-engineDB:/data/db
+    ports:
+      - 27017:27017
+
+volumes:
+  meeting-engineDB:
