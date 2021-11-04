@@ -8,6 +8,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-password}
     volumes:
       - meeting-engineDB:/data/db
+      - meeting-engineDB:/data/configdb
     ports:
       - 27017:27017
 
