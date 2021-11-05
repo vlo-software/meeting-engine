@@ -1,28 +1,28 @@
+// @ts-ignore - tslint doesn't like the import
 import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
 const bookingSchema = new Schema({
   userName: { type: String, required: true },
-  hourId: { type: mongoose.Types.ObjectId },
+  hourId: { type: mongoose.Types.ObjectId, required: true },
+  bookerToken: { type: String, required: true },
 });
 
 const teacherSchema = new Schema({
   teacherName: { type: String, required: true },
-  bookings: [bookingSchema]
+  bookings: [bookingSchema],
 });
 
 const hourSchema = new Schema({
   displayName: { type: String, required: true },
 });
 
-const meetingSchema = new Schema(
-  {
-	  startsAt: { type: Number, require: true },
-	  endsAt: { type: Number, require: true },
-    teachers: [teacherSchema],
-    hours: [hourSchema],
-  }
-);
+const meetingSchema = new Schema({
+  startsAt: { type: Number, require: true },
+  endsAt: { type: Number, require: true },
+  teachers: [teacherSchema],
+  hours: [hourSchema],
+});
 
 export interface IBooking {
   _id: mongoose.Types.ObjectId;
