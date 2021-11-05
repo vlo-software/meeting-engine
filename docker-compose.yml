@@ -4,7 +4,7 @@ services:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:?USERNAME_MISSING}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_LOGIN:?USERNAME_MISSING}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?PASSWORD_MISSING}
     volumes:
       - meeting-engineDB:/data/db
