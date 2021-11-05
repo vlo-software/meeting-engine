@@ -6,10 +6,18 @@
     "start": "node .output/server/index.mjs"
   },
   "devDependencies": {
-    "nuxt3": "latest"
+    "babel-eslint": "^10.1.0",
+    "eslint": "^8.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "nuxt3": "latest",
+    "prettier": "^2.4.1"
   },
   "dependencies": {
     "dotenv": "^10.0.0",
+    "joi": "^17.4.2",
     "less": "^4.1.2",
     "less-loader": "^10.2.0",
     "mongoose": "^6.0.12"
