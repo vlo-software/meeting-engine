@@ -1,43 +1,91 @@
 <template>
   <div class="content">
-    <SchoolLogo size="100" />
+    <NuxtLink to="/dashboard">
+      <SchoolLogo size="100" />
+    </NuxtLink>
     <h1>Witaj z powrotem</h1>
     <h2>Aktualne zebrania</h2>
     <Meeting
       v-for="meeting in meetings"
-      :key="meeting.start"
-      :start="meeting.start"
-      :end="meeting.end"
+      :key="meeting._id"
+      :startsAt="meeting.startsAt"
     />
-    <button v-on:click="addMeeting()">Dodaj zebranie</button>
+
+    <NuxtLink to="/new">
+      <button>Dodaj zebranie</button>
+    </NuxtLink>
   </div>
 </template>
 
 <script lang="ts">
-import { ref, Ref } from "vue";
-import Meeting from "~~/components/Meeting.vue";
-
-interface MeetingInfo {
-  start: number;
-  end: number;
-}
+import { ref } from "vue";
+import { IMeeting } from '@/database/models/meeting';
 
 export default {
-  components: { Meeting },
-  name: "App",
+  head: {
+    title: "Dashboard",
+  },
   setup() {
-    const meetings: Ref<MeetingInfo[]> = ref([]);
+    const meetings = ref<IMeeting[]>([
+      {
+        _id: null as any,
+        startsAt: new Date().getTime(),
+        endsAt: new Date().getTime(),
+        teachers: [],
+        hours: [],
+      },
+      {
+        _id: null as any,
+        startsAt: new Date().getTime(),
+        endsAt: new Date().getTime(),
+        teachers: [],
+        hours: [],
+      },
+      {
+        _id: null as any,
+        startsAt: new Date().getTime(),
+        endsAt: new Date().getTime(),
+        teachers: [],
+        hours: [],
+      },
+      {
+        _id: null as any,
+        startsAt: new Date().getTime(),
+        endsAt: new Date().getTime(),
+        teachers: [],
+        hours: [],
+      },
+      {
+        _id: null as any,
+        startsAt: new Date().getTime(),
+        endsAt: new Date().getTime(),
+        teachers: [],
+        hours: [],
+      },
+      {
+        _id: null as any,
+        startsAt: new Date().getTime(),
+        endsAt: new Date().getTime(),
+        teachers: [],
+        hours: [],
+      },
+      {
+        _id: null as any,
+        startsAt: new Date().getTime(),
+        endsAt: new Date().getTime(),
+        teachers: [],
+        hours: [],
+      },
+      {
+        _id: null as any,
+        startsAt: new Date().getTime(),
+        endsAt: new Date().getTime(),
+        teachers: [],
+        hours: [],
+      },
+    ]);
 
-    const addMeeting = () => {
-      meetings.value.push({
-        start: new Date().getTime(),
-        end: new Date().getTime(),
-      });
-    };
-    return {
-      meetings,
-      addMeeting,
-    };
+    return { meetings };
   },
 };
 </script>
@@ -83,9 +131,6 @@ button {
   transition: transform 250ms;
   &:hover {
     cursor: pointer;
-  }
-  &:active {
-    transform: scale(0.96);
   }
 }
 </style>
