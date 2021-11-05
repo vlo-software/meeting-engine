@@ -28,6 +28,7 @@ export interface IBooking {
   _id: mongoose.Types.ObjectId;
   userName: string;
   hourId: mongoose.Types.ObjectId;
+  bookerToken: string;
 }
 
 export interface ITeacher {
