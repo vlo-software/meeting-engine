@@ -1,4 +1,4 @@
-import { TeacherDTO } from "../models/dto/teacher";
+import { ConfigTeacherDTO } from "../models/dto/teacher";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 
@@ -9,18 +9,18 @@ const teachers = JSON.parse(
 );
 
 export class TeachersService {
-  public getAllTeachers(): Array<TeacherDTO> {
+  public getAllTeachers(): Array<ConfigTeacherDTO> {
     return teachers.map((item: { name: string }, idx: number) => ({
       name: item.name,
       id: idx,
     }));
   }
-  public getTeachersByIds(ids: Array<number>): Array<TeacherDTO> {
+  public getTeachersByIds(ids: Array<number>): Array<ConfigTeacherDTO> {
     const filteredTeachers = ids.map((id: number) => ({
       ...teachers.find((_: any, idx: number) => idx === id),
       id,
     }));
-    filteredTeachers.forEach((teacher: TeacherDTO | null) => {
+    filteredTeachers.forEach((teacher: ConfigTeacherDTO | null) => {
       if (!teacher) {
         throw Error("Incorrect id.");
       }
