@@ -1,5 +1,7 @@
 import { Meeting, IMeeting, ITeacher } from "~~/database/models/meeting";
-import { Types as MongooseTypes, Model } from "mongoose";
+//@ts-ignore
+import mongoose from "mongoose";
+const { Types: MongooseTypes, Model } = mongoose;
 import { TeachersService } from "./teachersService";
 import { MeetingDTO } from "../models/dto/meeting";
 import { HourDTO } from "../models/dto/hours";
