@@ -6,7 +6,6 @@
   </div>
 </template>
 
-
 <style lang="less" scoped>
 .card {
   display: block;

@@ -1,27 +1,43 @@
 <template>
   <Card>
-    <div class="card-content">
+    <NuxtLink :to="`/dashboard/meeting/${id}`" class="card-content">
       <i class="bi bi-calendar4-event"></i>
-      <h1>{{date}}</h1>
+      <h1>{{ date }}</h1>
       <i class="bi bi-chevron-right"></i>
-    </div>
+    </NuxtLink>
   </Card>
 </template>
 
 <script lang="ts">
-const months = ["Sty", "Lut", "Mar", "Kwi", "Maj", "Cze", "Lip", "Sie", "Wrz", "Paź", "Lis", "Gru"];
+const months = [
+  "Sty",
+  "Lut",
+  "Mar",
+  "Kwi",
+  "Maj",
+  "Cze",
+  "Lip",
+  "Sie",
+  "Wrz",
+  "Paź",
+  "Lis",
+  "Gru",
+];
 
 export default {
   props: {
+    id: { type: String, required: true },
     startsAt: { type: Number, required: true },
   },
   setup(props) {
     const start = new Date(props.startsAt);
     return {
-      date: `${months[start.getMonth()]} ${start.getDate()}, ${start.getFullYear()}`
+      date: `${
+        months[start.getMonth()]
+      } ${start.getDate()}, ${start.getFullYear()}`,
     };
-  }
-}
+  },
+};
 </script>
 
 <style lang="less" scoped>
@@ -42,15 +58,15 @@ h1 {
   grid-template-columns: auto 1fr 34px;
   text-align: left;
   line-height: 100px;
+  color: @text;
+  text-decoration: none;
   .bi-calendar4-event {
-    padding-left: 20px;
-    padding-right: 20px;
-    color: @text;
+    padding-left: 15px;
+    padding-right: 15px;
     -webkit-text-stroke: 1px @text;
-    font-size: 40px;
+    font-size: 24px;
   }
   .bi-chevron-right {
-    color: @text;
     -webkit-text-stroke: 2px @text;
     font-size: 24px;
   }

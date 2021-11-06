@@ -14,17 +14,11 @@
           <input type="time" v-model="end" />
         </div>
         <h3>Nauczyciele</h3>
-        <div class="teacher">
-          Joanna Rzeźniowiecka
-          <input type="checkbox" />
-        </div>
-        <div class="teacher">
-          Alice Wstała
-          <input type="checkbox" />
-        </div>
-        <div class="teacher">
-          Jarosław Drzemdżon
-          <input type="checkbox" />
+        <div class="teachers">
+          <div v-for="teacher in teachers" :key="teacher.name" class="teacher">
+            {{ teacher.name }}
+            <input type="checkbox" v-model="teacher.active" />
+          </div>
         </div>
       </div>
     </Card>
@@ -33,18 +27,35 @@
 </template>
 
 <script lang="ts">
+type Teacher = {
+  name: string;
+  active: boolean;
+};
+
 export default {
   head: {
     title: "Dodaj zebranie",
   },
   setup() {
+    const teachers = ref<Teacher[]>(
+      Array(20)
+        .fill(0)
+        .map((_, idx) => ({
+          active: true,
+          name: `Naucznik ${idx}`,
+        }))
+    );
     const date = ref(new Date().toISOString().substring(0, 10));
     const start = ref(new Date().toISOString().substring(11, 16));
     const end = ref(new Date().toISOString().substring(11, 16));
 
     const addMeeting = () => {
-      const [startHours, startMinutes] = start.value.split(':').map(e => parseInt(e));
-      const [endHours, endMinutes] = end.value.split(':').map(e => parseInt(e));
+      const [startHours, startMinutes] = start.value
+        .split(":")
+        .map((e) => parseInt(e));
+      const [endHours, endMinutes] = end.value
+        .split(":")
+        .map((e) => parseInt(e));
       const startsAt = new Date(date.value);
       const endsAt = new Date(date.value);
 
@@ -56,6 +67,7 @@ export default {
     };
 
     return {
+      teachers,
       start,
       end,
       date,
@@ -66,7 +78,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "@/assets/colors.less";
+@import "@/assets/index.less";
 
 h1 {
   font-weight: 800;
@@ -102,7 +114,7 @@ input[type="time"] {
   border-radius: 10px;
   padding: 10px;
   height: 30px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 700;
   color: @text;
   outline-color: @text;
@@ -125,6 +137,13 @@ input[type="time"] {
   }
 }
 
+.teachers {
+  margin-top: -10px;
+  max-height: 190px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 .teacher {
   display: grid;
   grid-template-columns: 1fr 30px;
@@ -133,44 +152,21 @@ input[type="time"] {
   border-radius: 10px;
   padding: 10px;
   height: 30px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 700;
   color: @text;
   line-height: 30px;
   margin: 10px 0;
+  &:first-child {
+    margin-top: 4px;
+  }
+  &:last-child {
+    margin-bottom: 4px;
+  }
 }
 
 .card-content {
   margin: 0 20px 1.6em 20px;
   text-align: left;
-}
-
-.content {
-  display: block;
-  padding: 36px 0;
-  height: calc(100vh - 36px * 2);
-  text-align: center;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-button {
-  border: 0;
-  padding: 0 10px;
-  display: inline-block;
-  width: calc(100% - 60px);
-  max-width: 400px;
-  background: @important;
-  margin: 10px 20px;
-  border-radius: 10px;
-  height: 50px;
-  color: @text;
-  font-size: 20px;
-  font-weight: 900;
-  line-height: 50px;
-  transition: transform 250ms;
-  &:hover {
-    cursor: pointer;
-  }
 }
 </style>
