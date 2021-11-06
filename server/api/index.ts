@@ -8,6 +8,7 @@ dotenv.config({ path: pathResolve(process.cwd(), ".env") });
 import express from "express";
 import { TeachersRouter } from "./teachers";
 import { LoginRouter } from "./users";
+import { AdminRouter } from "./admin";
 
 const app = express();
 
@@ -17,6 +18,7 @@ const setup = async () => {
   app.use(express.json());
   app.use("/teachers", TeachersRouter);
   app.use("/users", LoginRouter);
+  app.use("/admin", AdminRouter);
 };
 
 setup();
