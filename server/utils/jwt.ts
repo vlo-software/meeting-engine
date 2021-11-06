@@ -1,5 +1,8 @@
 // @ts-ignore
 import jwt from "jsonwebtoken";
+import { resolve as pathResolve } from "path";
+import * as dotenv from "dotenv";
+dotenv.config({ path: pathResolve(process.cwd(), ".env") });
 
 export type IJwtBody =
   | {

@@ -1,6 +1,9 @@
 //@ts-ignore
 import mongoose from "mongoose";
 import type { IncomingMessage, ServerResponse } from "http";
+import { resolve as pathResolve } from "path";
+import * as dotenv from "dotenv";
+dotenv.config({ path: pathResolve(process.cwd(), ".env") });
 
 let dbIsConnected = false;
 

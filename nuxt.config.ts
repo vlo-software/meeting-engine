@@ -1,6 +1,5 @@
-import { defineNuxtConfig } from 'nuxt3'
-import 'dotenv/config'
+import { defineNuxtConfig } from "nuxt3";
 
 export default defineNuxtConfig({
-  css: ['@/assets/main.css', '@/assets/colors.less'],
+  css: ["@/assets/main.css", "@/assets/colors.less"],
 });
