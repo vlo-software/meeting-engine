@@ -15,6 +15,12 @@ A simple parent-teacher meeting management application for the [V high school in
 - `ADMIN_PASSWORD` - Admin password, must be between 8 and 30 chars long.
 - `JWT_SECRET` - Secret used for signing json web tokens.
 
+## Configuring the available teachers
+
+Create a copy of the `config/teachers.example.json` file and name it `config/teachers.json`.
+
+Fill it out with the teachers, that you want to be available in the dashboard.
+
 ## Setting up the database
 
 After populating your Mongo variables in the `.env` file, you can spin up the container using `docker-compose`.
@@ -33,7 +39,7 @@ docker compose up -d
 
 ## Running the application
 
-### Yarn (Recommended)
+### Yarn
 
 #### Installing dependencies
 
@@ -59,28 +65,6 @@ yarn build
 yarn start
 ```
 
-### Npm
+## License
 
-#### Installing dependencies
-
-```sh
-npm install
-```
-
-#### Development server
-
-```sh
-npm run dev
-```
-
-#### Building for production
-
-```sh
-npm run build
-```
-
-#### Running the production server
-
-```sh
-npm run start
-```
+MIT
