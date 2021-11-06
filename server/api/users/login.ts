@@ -1,34 +1,26 @@
-import type { IncomingMessage, ServerResponse } from "http";
+import { Request, Response } from "express";
 // @ts-ignore
 import Joi from "joi";
-import { useBody } from "h3";
-import { generateJwt } from "~~/server/utils";
+import { generateJwt } from "../../utils";
 
 const schema = Joi.object({
   username: Joi.string().alphanum().min(4).max(30).required(),
   password: Joi.string().alphanum().min(8).max(30).required(),
 });
 
-export default async (req: IncomingMessage, res: ServerResponse) => {
-  if (req.method !== "POST") {
-    res.statusCode = 405;
-    return "Method not allowed.";
-  }
+export const postLogin = async (req: Request, res: Response) => {
   try {
-    const body = await schema.validateAsync(await useBody(req));
+    const body = await schema.validateAsync(req.body);
     const { ADMIN_USERNAME: username, ADMIN_PASSWORD: password } = process.env;
     if (!username || !password) {
-      res.statusCode = 500;
-      return "Missing user config.";
+      res.status(500).send("Missing user config.");
     }
     if (body.username !== username || body.password !== password) {
-      res.statusCode = 401;
-      return "Invalid credentials.";
+      res.status(401).send("Invalid credentials.");
     }
     const jwt = generateJwt({ admin: true });
-    return { jwt };
+    res.json({ jwt });
   } catch (e: any) {
-    res.statusCode = 400;
-    return e.message;
+    res.status(400).send(e.message);
   }
 };
