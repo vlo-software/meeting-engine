@@ -1,4 +1,4 @@
-import { Meeting, IMeeting, ITeacher } from "~~/database/models/meeting";
+import { Meeting, IMeeting, ITeacher } from "../../database/models/meeting";
 //@ts-ignore
 import mongoose from "mongoose";
 const { Types: MongooseTypes, Model } = mongoose;
@@ -41,7 +41,7 @@ export class MeetingService {
     const meeting = await this.model.findById(
       new MongooseTypes.ObjectId(meetingId)
     );
-    if (meeting.endsAt < new Date().getTime()) {
+    if (meeting === null || meeting.endsAt < new Date().getTime()) {
       return null;
     }
     return meeting ? (meeting.toObject() as IMeeting) : null;
@@ -109,7 +109,7 @@ export class MeetingService {
     const meeting: IMeeting = await this.model.findById(
       new MongooseTypes.ObjectId(meetingId)
     );
-    if (meeting.endsAt < new Date().getTime()) {
+    if (meeting === null || meeting.endsAt < new Date().getTime()) {
       return null;
     }
     return {
