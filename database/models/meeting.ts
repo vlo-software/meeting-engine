@@ -32,6 +32,7 @@ export interface IBooking {
 }
 
 export interface ITeacher {
+  _id: mongoose.Types.ObjectId;
   teacherName: string;
   bookings: Array<IBooking>;
 }

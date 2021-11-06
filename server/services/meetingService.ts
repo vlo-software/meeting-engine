@@ -1,6 +1,8 @@
-import { Meeting, IMeeting } from "~~/database/models/meeting";
+import { Meeting, IMeeting, ITeacher } from "~~/database/models/meeting";
 import { Types as MongooseTypes, Model } from "mongoose";
 import { TeachersService } from "./teachersService";
+import { MeetingDTO } from "../models/dto/meeting";
+import { HourDTO } from "../models/dto/hours";
 
 export class MeetingService {
   private readonly model: typeof Model;
@@ -16,9 +18,13 @@ export class MeetingService {
    * !!! IT WILL EXPOSE PERSONAL DATA !!!
    * @returns All meetings from the database in their raw form.
    */
-  public async getAllMeetings(): Promise<Array<IMeeting>> {
+  public async getAllMeetingsUnsafe(): Promise<Array<IMeeting>> {
     const rawMeetings = await this.model.find();
-    return rawMeetings.map((item: any) => item.toObject()) as Array<IMeeting>;
+    return rawMeetings
+      .map((item: any) => item.toObject())
+      .filter(
+        (item: IMeeting) => item.endsAt >= new Date().getTime()
+      ) as Array<IMeeting>;
   }
   /**
    * !!! DO NOT USE THIS METHOD FOR NORMAL USERS !!!
@@ -27,10 +33,15 @@ export class MeetingService {
    * @param meetingId - Meeting _id from the database
    * @returns Meeting from the database in its raw form.
    */
-  public async getMeetingById(meetingId: string): Promise<IMeeting | null> {
+  public async getMeetingByIdUnsafe(
+    meetingId: string
+  ): Promise<IMeeting | null> {
     const meeting = await this.model.findById(
       new MongooseTypes.ObjectId(meetingId)
     );
+    if (meeting.endsAt < new Date().getTime()) {
+      return null;
+    }
     return meeting ? (meeting.toObject() as IMeeting) : null;
   }
   /**
@@ -39,7 +50,7 @@ export class MeetingService {
    * It will just delete the meeting without asking questions.
    * @param meetingId - Meeting _id from the database
    */
-  public async deleteMeetingById(meetingId: string): Promise<void> {
+  public async deleteMeetingByIdUnsafe(meetingId: string): Promise<void> {
     await this.model.findByIdAndDelete(new MongooseTypes.ObjectId(meetingId));
   }
   /**
@@ -48,7 +59,7 @@ export class MeetingService {
    * It will create a new meeting without asking questions.
    * @param data - Information about the meeting to create
    */
-  public async addMeeting({
+  public async addMeetingUnsafe({
     startsAt,
     endsAt,
     teacherIds,
@@ -86,5 +97,78 @@ export class MeetingService {
       })),
       hours,
     });
+  }
+  /**
+   * This is safe to use for normal users
+   * @param meetingId - Meeting _id from the database
+   * @returns - Sanitised meeting ready to be presented to the user
+   */
+  public async getMeetingById(meetingId: string): Promise<MeetingDTO | null> {
+    const meeting: IMeeting = await this.model.findById(
+      new MongooseTypes.ObjectId(meetingId)
+    );
+    if (meeting.endsAt < new Date().getTime()) {
+      return null;
+    }
+    return {
+      startsAt: meeting.startsAt,
+      endsAt: meeting.endsAt,
+      hours: meeting.hours.map((hour) => ({
+        id: hour._id,
+        displayName: hour.displayName,
+      })),
+      teachers: meeting.teachers.map((teacher) => ({
+        id: teacher._id,
+        teacherName: teacher.teacherName,
+        bookings: teacher.bookings.map((booking) => ({
+          id: booking._id,
+          hourId: booking.hourId,
+        })),
+      })),
+    };
+  }
+  /**
+   * This is safe to use for normal users
+   * @param meetingId - Meeting _id from the database
+   * @param teacherId - Teacher _id from the database
+   * @param bookerToken - Token of the user getting the hours
+   * @returns - Array of available hours for the specified teacher in the specified meeting, throws if the user has already booked an hour
+   */
+  public async getAvailableHoursByTeacherId(
+    meetingId: string,
+    teacherId: string,
+    bookerToken: string
+  ): Promise<Array<HourDTO>> {
+    const meeting: IMeeting = await this.model.findOne({
+      _id: meetingId,
+      teachers: {
+        $filter: {
+          input: "$teachers",
+          as: "teacher",
+          cond: { $eq: ["$teacher._id", teacherId] },
+        },
+      },
+    });
+    if (meeting.endsAt < new Date().getTime()) {
+      throw Error("The meeting has ended, check your DB.");
+    }
+    if (meeting.teachers.length === 0) {
+      throw Error("The teacher with this id doesn't exist in this meeting.");
+    }
+    if (
+      meeting.teachers[0].bookings.find(
+        (booking) => booking.bookerToken === bookerToken
+      )
+    ) {
+      throw Error("This user already has an hour booked for this teacher.");
+    }
+    return meeting.hours
+      .filter(
+        (hour) =>
+          !meeting.teachers[0].bookings.find(
+            (booking) => booking.hourId === hour._id
+          )
+      )
+      .map((hour) => ({ id: hour._id, displayName: hour.displayName }));
   }
 }

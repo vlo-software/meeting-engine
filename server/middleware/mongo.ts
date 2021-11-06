@@ -1,15 +1,23 @@
+//@ts-ignore
 import mongoose from "mongoose";
+import type { IncomingMessage, ServerResponse } from "http";
 
 let dbIsConnected = false;
 
 const connectToDb = async () => {
   const connectionUri = `mongodb://${process.env.MONGO_LOGIN}:${process.env.MONGO_PASSWORD}@localhost:27017`;
   await mongoose.connect(connectionUri);
-}
+};
 
-connectToDb().then(() => {dbIsConnected = true});
+connectToDb().then(() => {
+  dbIsConnected = true;
+});
 
-export default async function (req, res, next) {
+export default async function (
+  _: IncomingMessage,
+  res: ServerResponse,
+  next: any
+) {
   if (dbIsConnected) {
     next();
     return;
