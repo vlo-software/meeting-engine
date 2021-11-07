@@ -18,42 +18,24 @@
   </div>
 </template>
 
-<script lang="ts">
-import { ref } from "vue";
+<script setup lang="ts">
 import { IMeeting } from "@/database/models/meeting";
 
-export default {
-  head: {
-    title: "Dashboard",
-  },
-  setup() {
-    const meetings = ref<IMeeting[]>([
-      {
-        _id: null as any,
-        startsAt: new Date().getTime(),
-        endsAt: new Date().getTime(),
-        teachers: [],
-        hours: [],
-      },
-      {
-        _id: null as any,
-        startsAt: new Date().getTime(),
-        endsAt: new Date().getTime(),
-        teachers: [],
-        hours: [],
-      },
-      {
-        _id: null as any,
-        startsAt: new Date().getTime(),
-        endsAt: new Date().getTime(),
-        teachers: [],
-        hours: [],
-      },
-    ]);
+useMeta({
+  title: "Dashboard",
+});
 
-    return { meetings };
-  },
-};
+const meetings = ref<IMeeting[]>([]);
+
+onMounted(async () => {
+  const res = await fetch("http://localhost:3000/api/admin/meetings", {
+    headers: {
+      authorization:
+        "adf eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjM2MjQzODY2LCJleHAiOjE2MzY0MTY2NjZ9.DDXwuun-RfJOdt22Q5h9skljWL_WeN2vDclxUyefMZg",
+    },
+  });
+  meetings.value = await res.json();
+});
 </script>
 
 <style lang="less" scoped>

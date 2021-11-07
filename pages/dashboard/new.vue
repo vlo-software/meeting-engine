@@ -16,7 +16,7 @@
         <h3>Nauczyciele</h3>
         <div class="teachers">
           <div v-for="teacher in teachers" :key="teacher.name" class="teacher">
-            {{ teacher.name }}
+            <p>{{ teacher.name }}</p>
             <input type="checkbox" v-model="teacher.active" />
           </div>
         </div>
@@ -26,106 +26,58 @@
   </div>
 </template>
 
-<script lang="ts">
-type Teacher = {
-  name: string;
-  active: boolean;
-};
+<script setup lang="ts">
+useMeta({ title: "Dodaj zebranie" });
 
-export default {
-  head: {
-    title: "Dodaj zebranie",
-  },
-  setup() {
-    const teachers = ref<Teacher[]>(
-      Array(20)
-        .fill(0)
-        .map((_, idx) => ({
-          active: true,
-          name: `Naucznik ${idx}`,
-        }))
-    );
-    const date = ref(new Date().toISOString().substring(0, 10));
-    const start = ref(new Date().toISOString().substring(11, 16));
-    const end = ref(new Date().toISOString().substring(11, 16));
+const router = useRouter();
 
-    const addMeeting = () => {
-      const [startHours, startMinutes] = start.value
-        .split(":")
-        .map((e) => parseInt(e));
-      const [endHours, endMinutes] = end.value
-        .split(":")
-        .map((e) => parseInt(e));
-      const startsAt = new Date(date.value);
-      const endsAt = new Date(date.value);
+const { data } = await useFetch("http://localhost:3000/api/teachers");
 
-      startsAt.setHours(startHours, startMinutes);
-      endsAt.setHours(endHours, endMinutes);
+const teachers = ref(
+  (data.value as any[]).map(({ id, name }) => ({
+    id,
+    name,
+    active: true,
+  }))
+);
 
-      console.log(startsAt);
-      console.log(endsAt);
-    };
+const date = ref(new Date().toISOString().substring(0, 10));
+const start = ref(new Date().toISOString().substring(11, 16));
+const end = ref(new Date().toISOString().substring(11, 16));
 
-    return {
-      teachers,
-      start,
-      end,
-      date,
-      addMeeting,
-    };
-  },
+const addMeeting = async () => {
+  const [startHours, startMinutes] = start.value
+    .split(":")
+    .map((e) => parseInt(e));
+  const [endHours, endMinutes] = end.value.split(":").map((e) => parseInt(e));
+  const startsAt = new Date(date.value);
+  const endsAt = new Date(date.value);
+
+  startsAt.setHours(startHours, startMinutes);
+  endsAt.setHours(endHours, endMinutes);
+
+  await fetch("/api/admin/meetings", {
+    method: "post",
+    headers: {
+      authorization:
+        "adf eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjM2MjQzODY2LCJleHAiOjE2MzY0MTY2NjZ9.DDXwuun-RfJOdt22Q5h9skljWL_WeN2vDclxUyefMZg",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      startsAt: startsAt.getTime(),
+      endsAt: endsAt.getTime(),
+      teacherIds: teachers.value
+        .filter((teacher) => teacher.active)
+        .map((teacher) => teacher.id),
+    }),
+  });
+
+  router.push("/dashboard");
 };
 </script>
 
 <style lang="less" scoped>
 @import "@/assets/index.less";
-
-h1 {
-  font-weight: 800;
-  font-size: 36px;
-  color: @text;
-}
-
-input[type="checkbox"] {
-  appearance: none;
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  margin: 3px;
-  width: 24px;
-  height: 24px;
-  border: 0;
-  background: #c4c4c4;
-  border-radius: 100%;
-  &:checked {
-    background: darken(@tertiary, 30%);
-    background-image: url("data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjQ0OCIgaGVpZ2h0PSI0NDgiIHZpZXdCb3g9IjAgMCA0NDggNDQ4Ij4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQxNy43NSAxNDEuNWMwIDYuMjUtMi41IDEyLjUtNyAxN2wtMjE1IDIxNWMtNC41IDQuNS0xMC43NSA3LTE3IDdzLTEyLjUtMi41LTE3LTdsLTEyNC41LTEyNC41Yy00LjUtNC41LTctMTAuNzUtNy0xN3MyLjUtMTIuNSA3LTE3bDM0LTM0YzQuNS00LjUgMTAuNzUtNyAxNy03czEyLjUgMi41IDE3IDdsNzMuNSA3My43NSAxNjQtMTY0LjI1YzQuNS00LjUgMTAuNzUtNyAxNy03czEyLjUgMi41IDE3IDdsMzQgMzRjNC41IDQuNSA3IDEwLjc1IDcgMTd6Ij48L3BhdGg+Cjwvc3ZnPgo=");
-    background-repeat: no-repeat;
-    background-position: 4px 4px;
-    background-size: 16px 16px;
-    filter: invert(1) hue-rotate(180deg);
-  }
-}
-
-input[type="date"],
-input[type="time"] {
-  user-select: none;
-  border: solid 2px #e8e8e8;
-  background: #e8e8e8;
-  border-radius: 10px;
-  padding: 10px;
-  height: 30px;
-  font-family: "Poppins", sans-serif;
-  font-weight: 700;
-  color: @text;
-  outline-color: @text;
-  // Fix on iOS devices
-  -webkit-appearance: textfield;
-  -moz-appearance: textfield;
-}
-
-input[type="date"] {
-  width: calc(100% - 20px);
-}
 
 input[type="time"] {
   width: calc(50% - 28px);
@@ -162,6 +114,13 @@ input[type="time"] {
   }
   &:last-child {
     margin-bottom: 4px;
+  }
+  p {
+    margin: 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 270px;
   }
 }
 

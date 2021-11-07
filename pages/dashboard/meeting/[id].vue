@@ -7,7 +7,7 @@
 
     <Card v-for="teacher in teachers" :key="teacher.teacherName">
       <NuxtLink
-        :to="`/dashboard/bookings/${$route.params.id}/${teacher.id}`"
+        :to="`/dashboard/bookings/${$route.params.id}/${teacher._id}`"
         class="card-content"
       >
         <h3>{{ teacher.teacherName }}</h3>
@@ -15,32 +15,42 @@
       </NuxtLink>
     </Card>
 
-    <button class="btn-red">Usuń zebranie</button>
+    <button class="btn-red" @click="remove()">Usuń zebranie</button>
   </div>
 </template>
 
-<script lang="ts">
-type Teacher = {
-  id: string;
-  teacherName: string;
+<script setup lang="ts">
+import { ITeacher } from "~~/database/models/meeting";
+
+const route = useRoute();
+const router = useRouter();
+
+const teachers = ref<ITeacher[]>([]);
+
+const remove = async () => {
+  await fetch(`/api/admin/meetings/${route.params.id}`, {
+    method: "delete",
+    headers: {
+      authorization:
+        "adf eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjM2MjQzODY2LCJleHAiOjE2MzY0MTY2NjZ9.DDXwuun-RfJOdt22Q5h9skljWL_WeN2vDclxUyefMZg",
+      "content-type": "application/json",
+    },
+  });
+  router.push("/dashboard");
 };
 
-export default {
-  setup() {
-    const teachers = ref<Teacher[]>(
-      Array(20)
-        .fill(0)
-        .map((_, idx) => ({
-          id: idx.toString(),
-          teacherName: `Naucznik ${idx}`,
-        }))
-    );
-
-    return {
-      teachers,
-    };
-  },
-};
+onMounted(async () => {
+  const res = await fetch(
+    `http://localhost:3000/api/admin/meetings/${route.params.id}`,
+    {
+      headers: {
+        authorization:
+          "adf eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjM2MjQzODY2LCJleHAiOjE2MzY0MTY2NjZ9.DDXwuun-RfJOdt22Q5h9skljWL_WeN2vDclxUyefMZg",
+      },
+    }
+  );
+  teachers.value = (await res.json()).meeting.teachers;
+});
 </script>
 
 <style lang="less" scoped>

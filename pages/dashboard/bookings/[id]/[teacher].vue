@@ -3,37 +3,51 @@
     <NuxtLink to="/dashboard">
       <SchoolLogo size="100" />
     </NuxtLink>
-    <h1>ID naucznika: {{ $route.params.teacher }}</h1>
-
-    <Card v-for="booking in bookings" :key="booking.user">
-      <div :class="booking.user ? 'card-content' : 'card-content booking-free'">
-        <h3>{{ booking.user || "Wolny termin" }}</h3>
-        <h3 class="hour">{{ booking.hour }}</h3>
+    <h1>{{ teacher?.teacherName }}</h1>
+    <Card v-for="hour in hours" :key="hour.displayName">
+      <div
+        :set="
+          (booking =
+            teacher &&
+            teacher.bookings.find((booking) => booking.hourId === hour._id))
+        "
+      >
+        <div :class="booking ? 'card-content' : 'card-content booking-free'">
+          <h3>{{ booking?.userName || "Wolny termin" }}</h3>
+          <h3 class="hour">{{ hour.displayName }}</h3>
+        </div>
       </div>
     </Card>
   </div>
 </template>
 
-<script lang="ts">
-type Booking = {
-  user?: string;
-  hour: string;
-  free: boolean;
-};
+<script setup lang="ts">
+import { IHour, IMeeting, ITeacher } from "~~/database/models/meeting";
 
-export default {
-  setup() {
-    const bookings = ref<Booking[]>([
-      { user: "Pat i mat", hour: "6:00 PM", free: false },
-      { user: undefined, hour: "6:10 PM", free: true },
-      { user: "Pateusz Max", hour: "6:20 PM", free: false },
-    ]);
+const route = useRoute();
 
-    return {
-      bookings,
-    };
-  },
-};
+const hours = ref<IHour[]>();
+const teacher = ref<ITeacher>();
+
+onMounted(async () => {
+  const res = await fetch(
+    `http://localhost:3000/api/admin/meetings/${route.params.id}`,
+    {
+      headers: {
+        authorization:
+          "adf eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjM2MjQzODY2LCJleHAiOjE2MzY0MTY2NjZ9.DDXwuun-RfJOdt22Q5h9skljWL_WeN2vDclxUyefMZg",
+      },
+    }
+  );
+  const meeting: IMeeting = (await res.json()).meeting;
+  hours.value = meeting.hours;
+  teacher.value = meeting.teachers.filter(
+    (teacher: ITeacher) =>
+      (teacher._id as any as string) === route.params.teacher
+  )[0];
+
+  console.log(teacher);
+});
 </script>
 
 <style lang="less" scoped>

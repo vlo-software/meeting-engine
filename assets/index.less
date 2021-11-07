@@ -34,3 +34,43 @@ h1 {
   font-size: 36px;
   color: @text;
 }
+
+input[type="checkbox"] {
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  margin: 3px;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  background: #c4c4c4;
+  border-radius: 100%;
+  &:checked {
+    background: darken(@tertiary, 30%);
+    background-image: url("data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjQ0OCIgaGVpZ2h0PSI0NDgiIHZpZXdCb3g9IjAgMCA0NDggNDQ4Ij4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQxNy43NSAxNDEuNWMwIDYuMjUtMi41IDEyLjUtNyAxN2wtMjE1IDIxNWMtNC41IDQuNS0xMC43NSA3LTE3IDdzLTEyLjUtMi41LTE3LTdsLTEyNC41LTEyNC41Yy00LjUtNC41LTctMTAuNzUtNy0xN3MyLjUtMTIuNSA3LTE3bDM0LTM0YzQuNS00LjUgMTAuNzUtNyAxNy03czEyLjUgMi41IDE3IDdsNzMuNSA3My43NSAxNjQtMTY0LjI1YzQuNS00LjUgMTAuNzUtNyAxNy03czEyLjUgMi41IDE3IDdsMzQgMzRjNC41IDQuNSA3IDEwLjc1IDcgMTd6Ij48L3BhdGg+Cjwvc3ZnPgo=");
+    background-repeat: no-repeat;
+    background-position: 4px 4px;
+    background-size: 16px 16px;
+    filter: invert(1) hue-rotate(180deg);
+  }
+}
+
+input[type="password"],
+input[type="text"],
+input[type="date"],
+input[type="time"] {
+  width: calc(100% - 40px);
+  user-select: none;
+  border: solid 2px #e8e8e8;
+  background: #e8e8e8;
+  border-radius: 10px;
+  padding: 10px;
+  height: 30px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  color: @text;
+  outline-color: @text;
+  // Fix on iOS devices
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+}
