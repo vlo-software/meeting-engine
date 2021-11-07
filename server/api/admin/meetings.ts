@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { MeetingService } from "../../services/meetingService";
-//@ts-ignore
 import Joi from "joi";
 
 const postMeetingSchema = Joi.object({

@@ -1,4 +1,3 @@
-// @ts-ignore
 import jwt from "jsonwebtoken";
 import { resolve as pathResolve } from "path";
 import * as dotenv from "dotenv";

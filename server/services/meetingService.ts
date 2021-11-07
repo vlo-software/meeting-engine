@@ -1,5 +1,4 @@
-import { Meeting, IMeeting, ITeacher } from "../../database/models/meeting";
-//@ts-ignore
+import { Meeting, IMeeting } from "../../database/models/meeting";
 import mongoose from "mongoose";
 const { Types: MongooseTypes, Model } = mongoose;
 import { TeachersService } from "./teachersService";
@@ -77,6 +76,7 @@ export class MeetingService {
       throw Error("The meeting duration cannot be negative.");
     }
     const numberOfHours = Math.floor(duration / BOOKING_LENGTH);
+    // @ts-ignore
     const hours = [...Array(numberOfHours).keys()].map((i: number) => {
       const start = new Date(startsAt + i * BOOKING_LENGTH);
       const end = new Date(start.getTime() + BOOKING_LENGTH);
@@ -116,15 +116,15 @@ export class MeetingService {
       startsAt: meeting.startsAt,
       endsAt: meeting.endsAt,
       hours: meeting.hours.map((hour) => ({
-        id: hour._id,
+        id: hour._id.toString(),
         displayName: hour.displayName,
       })),
       teachers: meeting.teachers.map((teacher) => ({
-        id: teacher._id,
+        id: teacher._id.toString(),
         teacherName: teacher.teacherName,
         bookings: teacher.bookings.map((booking) => ({
-          id: booking._id,
-          hourId: booking.hourId,
+          id: booking._id.toString(),
+          hourId: booking.hourId.toString(),
         })),
       })),
     };
@@ -171,6 +171,9 @@ export class MeetingService {
             (booking) => booking.hourId === hour._id
           )
       )
-      .map((hour) => ({ id: hour._id, displayName: hour.displayName }));
+      .map((hour) => ({
+        id: hour._id.toString(),
+        displayName: hour.displayName,
+      }));
   }
 }
