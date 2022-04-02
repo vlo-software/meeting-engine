@@ -8,19 +8,21 @@ import { useEffect, useState } from 'react';
 export default function Teacher() {
 	const router = useRouter();
 	const { id, teacher: teacherId } = router.query;
-	console.log(router.query);
-
+	
 	const [hours, setHours] = useState<Array<IHour>>([]);
 	const [teacher, setTeacher] = useState<ITeacher>();
 
 	useEffect(() => {
+		if (!sessionStorage.getItem('admin-token')) {	
+			router.push('/dashboard/login');
+		}
 		(async () => {
 			const res = await fetch(
 				`http://localhost:3000/api/admin/meetings/${id}`,
 				{
 					headers: {
 						authorization:
-							"adf eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjM2MjQzODY2LCJleHAiOjE2MzY0MTY2NjZ9.DDXwuun-RfJOdt22Q5h9skljWL_WeN2vDclxUyefMZg",
+						`bearer ${sessionStorage.getItem('admin-token')}`,	
 					},
 				}
 			);

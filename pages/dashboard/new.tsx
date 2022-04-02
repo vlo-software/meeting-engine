@@ -2,12 +2,11 @@ import Card from '../../components/Card';
 import SchoolLogo from '../../components/SchoolLogo';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ConfigTeacherDTO } from '../../server/models/dto/teacher';
 
-export async function getServerSideProps(context) {
-	console.log(context.resolvedUrl)
-  const res = await fetch('http://localhost:3000/api/teachers');
+export async function getServerSideProps() {
+  const res = await fetch('http://localhost:3000/api/teachers'); // TODO: change to real url
   const teachers = await res.json();
 
   return {
@@ -19,6 +18,12 @@ export async function getServerSideProps(context) {
 
 export default function New(props) {
 	const router = useRouter();
+
+	useEffect(() => {
+		if (!sessionStorage.getItem('admin-token')) {
+			router.push('/dashboard/login');
+		}
+	}, []);
 
 	const [teachers, setTeachers] = useState<Array<ConfigTeacherDTO & { active: boolean }>>(props.teachers.map((teacher) => ({...teacher, active: true})));
 
@@ -41,7 +46,7 @@ export default function New(props) {
 			method: "post",
 			headers: {
 				authorization:
-					"adf eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjM2MjQzODY2LCJleHAiOjE2MzY0MTY2NjZ9.DDXwuun-RfJOdt22Q5h9skljWL_WeN2vDclxUyefMZg",
+					`bearer ${sessionStorage.getItem("admin-token")}`,
 				"content-type": "application/json",
 			},
 			body: JSON.stringify({
@@ -55,7 +60,6 @@ export default function New(props) {
 
 		router.push("/dashboard");
 	};
-
 	return (<>
 	 <div className="content">
     <Link href="/dashboard" passHref>

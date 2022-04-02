@@ -3,14 +3,19 @@ import { IMeeting } from "../../database/models/meeting";
 import Link from 'next/link';
 import SchoolLogo from '../../components/SchoolLogo';
 import Meeting from '../../components/Meeting';
+import { useRouter } from "next/router";
 
 export default function Home() {
   const [meetings, setMeetings] = useState<Array<IMeeting>>([]);
+  const router = useRouter();
   useEffect(() => {
+    if (!sessionStorage.getItem("admin-token")) {
+      router.push("/dashboard/login");
+    }
     fetch("/api/admin/meetings", {
       headers: {
         authorization:
-          "adf eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjM2MjQzODY2LCJleHAiOjE2MzY0MTY2NjZ9.DDXwuun-RfJOdt22Q5h9skljWL_WeN2vDclxUyefMZg",
+          `bearer ${sessionStorage.getItem("admin-token")}`,
       },
     }).then((res) => res.json()).then(setMeetings);
   }, [])

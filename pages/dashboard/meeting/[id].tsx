@@ -12,12 +12,15 @@ export default function Meeting() {
 	const [teachers, setTeachers] = useState<Array<ITeacher>>([]);
 
 	useEffect(() => {
-		 fetch(
+		if(!sessionStorage.getItem('admin-token')) {	
+			router.push('/dashboard/login');
+		}
+		fetch(
 			`http://localhost:3000/api/admin/meetings/${id}`,
 			{
 				headers: {
 					authorization:
-						"adf eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjM2MjQzODY2LCJleHAiOjE2MzY0MTY2NjZ9.DDXwuun-RfJOdt22Q5h9skljWL_WeN2vDclxUyefMZg",
+						`bearer ${sessionStorage.getItem('admin-token')}`,	
 				},
 			}
 		).then(res => res.json()).then((data) => setTeachers(data.meeting.teachers));
@@ -28,7 +31,7 @@ export default function Meeting() {
 			method: "delete",
 			headers: {
 				authorization:
-					"adf eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjM2MjQzODY2LCJleHAiOjE2MzY0MTY2NjZ9.DDXwuun-RfJOdt22Q5h9skljWL_WeN2vDclxUyefMZg",
+					`bearer ${sessionStorage.getItem('admin-token')}`,
 				"content-type": "application/json",
 			},
 		});
