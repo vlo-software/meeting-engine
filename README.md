@@ -1,6 +1,6 @@
 # Meeting Engine
 
-A simple parent-teacher meeting management application for the [V high school in Gdańsk](http://www.vlo.gda.pl/).
+A simple parent-teacher meeting management application for the [V high school in Gdańsk](https://www.vlo.gda.pl/).
 
 ## Configuring the .env
 

@@ -101,6 +101,46 @@ export class MeetingService {
     });
   }
   /**
+   * !!! DO NOT USE THIS METHOD FOR NORMAL USERS !!!
+   *
+   * It will delete the meeting without asking questions.
+   * @param meetingId - Meeting _id from the database
+   * @param teacherId - Teacher _id from the database
+   * @param bookingId - Booking _id from the database
+   * @returns - Array of available hours for the specified teacher in the specified meeting, throws if the user has already booked an hour
+   */
+  public async deleteBookingUnsafe(
+    meetingId: string,
+    teacherId: string,
+    bookingId: string
+  ): Promise<void> {
+    const meeting = await this.model.findOne({
+      _id: meetingId,
+    });
+    if (meeting.endsAt < new Date().getTime()) {
+      throw Error("The meeting has already ended.");
+    }
+    if (
+      !meeting.teachers.some((teacher) => teacher._id.toString() === teacherId)
+    ) {
+      throw Error("The teacher with this id doesn't exist in this meeting.");
+    }
+    if (
+      !meeting.teachers
+        .find((teacher) => teacher._id.toString() === teacherId)
+        .bookings.find((booking) => booking._id.toString() === bookingId)
+    ) {
+      throw Error("This user doesn't have an hour booked with this teacher.");
+    }
+    meeting.teachers.find(
+      (teacher) => teacher._id.toString() === teacherId
+    ).bookings = meeting.teachers
+      .find((teacher) => teacher._id.toString() === teacherId)
+      .bookings.filter((booking) => booking._id.toString() != bookingId);
+    await meeting.save();
+  }
+
+  /**
    * This is safe to use for normal users
    * @param meetingId - Meeting _id from the database
    * @returns - Sanitised meeting ready to be presented to the user
@@ -153,23 +193,65 @@ export class MeetingService {
       throw Error("The teacher with this id doesn't exist in this meeting.");
     }
     if (
-      meeting.teachers[0].bookings.find(
-        (booking) => booking.bookerToken === bookerToken
-      )
+      meeting.teachers
+        .find((teacher) => teacher._id.toString() === teacherId)
+        .bookings.find((booking) => booking.bookerToken === bookerToken)
     ) {
       throw Error("This user already has an hour booked for this teacher.");
     }
     return meeting.hours
       .filter(
         (hour) =>
-          !meeting.teachers[0].bookings.find(
-            (booking) => booking.hourId === hour._id
-          )
+          !meeting.teachers
+            .find((teacher) => teacher._id.toString() === teacherId)
+            .bookings.find(
+              (booking) => booking.hourId.toString() === hour._id.toString()
+            )
       )
       .map((hour) => ({
         id: hour._id.toString(),
         displayName: hour.displayName,
       }));
+  }
+  /**
+   * This is safe to use for normal users
+   * @param meetingId - Meeting _id from the database
+   * @param teacherId - Teacher _id from the database
+   * @param bookerToken - Token of the user getting the hours
+   * @returns - Booking or null
+   **/
+  public async getBookingByTeacherId(
+    meetingId: string,
+    teacherId: string,
+    bookerToken
+  ) {
+    const meeting: IMeeting = await this.model.findOne({
+      _id: meetingId,
+    });
+    if (meeting.endsAt < new Date().getTime()) {
+      throw Error("The meeting has ended, check your DB.");
+    }
+    if (
+      !meeting.teachers.some((teacher) => teacher._id.toString() === teacherId)
+    ) {
+      throw Error("The teacher with this id doesn't exist in this meeting.");
+    }
+    const teacher = meeting.teachers.find(
+      (teacher) =>
+        teacher._id.toString() === teacherId &&
+        teacher.bookings.find((booking) => booking.bookerToken === bookerToken)
+    );
+    if (!teacher) return null;
+
+    const booking: any = teacher.bookings.find(
+      (booking) => booking.bookerToken === bookerToken
+    );
+    return {
+      ...booking,
+      hourDisplayName: meeting.hours.find(
+        (hour) => hour._id.toString() === booking.hourId.toString()
+      ).displayName,
+    };
   }
   /**
    * This is safe to use for normal users
@@ -199,9 +281,9 @@ export class MeetingService {
       throw Error("The teacher with this id doesn't exist in this meeting.");
     }
     if (
-      meeting.teachers[0].bookings.find(
-        (booking) => booking.bookerToken === bookerToken
-      )
+      meeting.teachers
+        .find((teacher) => teacher._id.toString() === teacherId)
+        .bookings.find((booking) => booking.bookerToken === bookerToken)
     ) {
       throw Error("This user already has an hour booked for this teacher.");
     }
@@ -210,16 +292,23 @@ export class MeetingService {
       throw Error("The hour with this id doesn't exist in this meeting.");
     }
     if (
-      meeting.teachers[0].bookings.find(
-        (booking) => booking.hourId === hour._id
-      )
+      meeting.teachers
+        .find((teacher) => teacher._id.toString() === teacherId)
+        .bookings.find(
+          (booking) => booking.hourId.toString() === hour._id.toString()
+        )
     ) {
       throw Error("This hour is already booked.");
     }
-    meeting.teachers[0].bookings.push({
-      hourId: hour._id,
-      userName,
-      bookerToken,
+    meeting.teachers = meeting.teachers.map((teacher) => {
+      if (teacher._id.toString() === teacherId) {
+        teacher.bookings.push({
+          hourId: hour._id,
+          userName,
+          bookerToken,
+        });
+      }
+      return teacher;
     });
     await meeting.save();
   }
@@ -227,7 +316,6 @@ export class MeetingService {
    * This is safe to use for normal users
    * @param meetingId - Meeting _id from the database
    * @param teacherId - Teacher _id from the database
-   * @param hourId - Hour _id from the database
    * @param bookerToken - Token of the user getting the hours
    * @returns - Array of available hours for the specified teacher in the specified meeting, throws if the user has already booked an hour
    */
@@ -248,15 +336,17 @@ export class MeetingService {
       throw Error("The teacher with this id doesn't exist in this meeting.");
     }
     if (
-      !meeting.teachers[0].bookings.find(
-        (booking) => booking.bookerToken === bookerToken
-      )
+      !meeting.teachers
+        .find((teacher) => teacher._id.toString() === teacherId)
+        .bookings.find((booking) => booking.bookerToken === bookerToken)
     ) {
       throw Error("This user doesn't have an hour booked with this teacher.");
     }
-    meeting.teachers[0].bookings = meeting.teachers[0].bookings.filter(
-      (booking) => booking.bookerToken != bookerToken
-    );
+    meeting.teachers.find(
+      (teacher) => teacher._id.toString() === teacherId
+    ).bookings = meeting.teachers
+      .find((teacher) => teacher._id.toString() === teacherId)
+      .bookings.filter((booking) => booking.bookerToken != bookerToken);
     await meeting.save();
   }
 }

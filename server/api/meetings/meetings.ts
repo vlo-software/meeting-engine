@@ -48,6 +48,25 @@ export const getHoursByTeacherId = async (req: Request, res: Response) => {
     res.status(400).send(e.message);
   }
 };
+export const getBookingByTeacherId = async (req: Request, res: Response) => {
+  const meetingService = new MeetingService();
+  const { id, teacherId } = req.params;
+  if (!req.signedCookies.bookerToken) {
+    res.status(403);
+    res.json({ res: "Missing cookie." });
+  }
+  try {
+    res.json({
+      booking: await meetingService.getBookingByTeacherId(
+        await idSchema.validateAsync(id),
+        await idSchema.validateAsync(teacherId),
+        req.signedCookies.bookerToken
+      ),
+    });
+  } catch (e: any) {
+    res.status(400).send(e.message);
+  }
+};
 export const addBooking = async (req: Request, res: Response) => {
   const meetingService = new MeetingService();
   const { id, teacherId, hourId } = req.params;

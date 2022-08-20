@@ -43,10 +43,25 @@ export const postMeeting = async (req: Request, res: Response) => {
 
 export const deleteMeetingById = async (req: Request, res: Response) => {
   const meetingService = new MeetingService();
-  const { id } = req.params;
+  const { id, teacherId, bookingId } = req.params;
   try {
     await meetingService.deleteMeetingByIdUnsafe(
       await idSchema.validateAsync(id)
+    );
+    res.sendStatus(200);
+  } catch (e: any) {
+    res.status(400).send(e.message);
+  }
+};
+
+export const deleteBookingById = async (req: Request, res: Response) => {
+  const meetingService = new MeetingService();
+  const { id, teacherId, bookingId } = req.params;
+  try {
+    await meetingService.deleteBookingUnsafe(
+      await idSchema.validateAsync(id),
+      await idSchema.validateAsync(teacherId),
+      await idSchema.validateAsync(bookingId)
     );
     res.sendStatus(200);
   } catch (e: any) {
