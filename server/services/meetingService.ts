@@ -259,6 +259,7 @@ export class MeetingService {
    * @param teacherId - Teacher _id from the database
    * @param hourId - Hour _id from the database
    * @param userName - Name of the user booking the hour
+   * @param className - Name of the class
    * @param bookerToken - Token of the user getting the hours
    * @returns - Array of available hours for the specified teacher in the specified meeting, throws if the user has already booked an hour
    */
@@ -267,6 +268,7 @@ export class MeetingService {
     teacherId: string,
     hourId: string,
     userName: string,
+    className: string,
     bookerToken: string
   ): Promise<void> {
     const meeting = await this.model.findOne({
@@ -306,6 +308,7 @@ export class MeetingService {
           hourId: hour._id,
           userName,
           bookerToken,
+          className,
         });
       }
       return teacher;

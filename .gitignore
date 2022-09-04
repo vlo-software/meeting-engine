@@ -36,3 +36,4 @@ yarn-error.log*
 # config files
 .env
 config/teachers.json
+config/classes.json

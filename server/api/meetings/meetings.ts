@@ -2,12 +2,25 @@ import { Request, Response } from "express";
 import { MeetingService } from "../../services/meetingService";
 import { v4 as uuidv4 } from "uuid";
 import Joi from "joi";
+import { readFileSync } from "fs";
+import { resolve } from "path";
+
+const classes = JSON.parse(
+  readFileSync(resolve(process.cwd(), "config/classes.json"), {
+    encoding: "utf8",
+  })
+);
 
 const idSchema = Joi.string()
   .length(24)
-  .regex(/[0-9a-fA-F]+/);
+  .regex(/[0-9a-fA-F]+/)
+  .required();
 
-const userNameSchema = Joi.string().min(5).max(60);
+const userNameSchema = Joi.string().min(5).max(60).required();
+
+const classNameSchema = Joi.string()
+  .valid(...classes)
+  .required();
 
 export const getMeetingById = async (req: Request, res: Response) => {
   const meetingService = new MeetingService();
@@ -70,7 +83,7 @@ export const getBookingByTeacherId = async (req: Request, res: Response) => {
 export const addBooking = async (req: Request, res: Response) => {
   const meetingService = new MeetingService();
   const { id, teacherId, hourId } = req.params;
-  const { username } = req.body;
+  const { username, classname } = req.body;
   if (!req.signedCookies.bookerToken) {
     res.status(403);
     res.json({ res: "Missing cookie." });
@@ -82,6 +95,7 @@ export const addBooking = async (req: Request, res: Response) => {
       await idSchema.validateAsync(teacherId),
       await idSchema.validateAsync(hourId),
       await userNameSchema.validateAsync(username),
+      await classNameSchema.validateAsync(classname),
       req.signedCookies.bookerToken
     );
     res.json({ res: "Booking added." });

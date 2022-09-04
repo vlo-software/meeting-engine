@@ -4,6 +4,7 @@ const { Schema, model } = mongoose;
 
 const bookingSchema = new Schema({
   userName: { type: String, required: true },
+  className: { type: String, required: true },
   hourId: { type: mongoose.Types.ObjectId, required: true },
   bookerToken: { type: String, required: true },
 });
@@ -27,6 +28,7 @@ const meetingSchema = new Schema({
 export interface IBooking {
   _id: mongoose.Types.ObjectId;
   userName: string;
+  className: string;
   hourId: mongoose.Types.ObjectId;
   bookerToken: string;
 }

@@ -21,6 +21,12 @@ Create a copy of the `config/teachers.example.json` file and name it `config/tea
 
 Fill it out with the teachers, that you want to be available in the dashboard.
 
+## Configuring the available classes
+
+Create a copy of the `config/classes.example.json` file and name it `config/classes.json`.
+
+Fill it out with classes, that you want to be available during the booking process.
+
 ## Setting up the database
 
 After populating your Mongo variables in the `.env` file, you can spin up the container using `docker-compose`.

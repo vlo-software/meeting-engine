@@ -2,6 +2,8 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import Card from "../../../../../../components/Card";
 import SchoolLogo from "../../../../../../components/SchoolLogo";
+import { readFileSync } from "fs";
+import { resolve } from "path";
 
 export async function getServerSideProps(context) {
   const { id, teacherId, hourId } = context.params;
@@ -10,12 +12,20 @@ export async function getServerSideProps(context) {
       // TODO: get this to work in production
       `http://localhost:3000/api/meetings/${id}`
     ).then((res) => res.json());
+
+    const classes = JSON.parse(
+      readFileSync(resolve(process.cwd(), "config/classes.json"), {
+        encoding: "utf8",
+      })
+    );
+
     return {
       props: {
         id,
         teacherId,
         teacher: meeting.teachers.find((teacher) => teacher.id === teacherId),
         hour: meeting.hours.find((hour) => hour.id === hourId),
+        classes,
         error: null,
       },
     };
@@ -26,22 +36,24 @@ export async function getServerSideProps(context) {
         teacherId,
         teacher: null,
         hour: null,
+        classes: [],
         error: error.message,
       },
     };
   }
 }
 
-export default function AddBooking({ id, teacherId, teacher, hour }) {
+export default function AddBooking({ id, teacherId, teacher, hour, classes }) {
   const router = useRouter();
 
   const formattedHour = hour.displayName.split(" ")[0];
 
   const [parentName, setParentName] = useState("");
+  const [className, setClassName] = useState("");
 
   async function bookMeeting() {
     if (parentName.length === 0) {
-      alert("Please enter the parent's name first.");
+      alert("Please enter the student's name first.");
       return;
     }
     const rawReq = await fetch(
@@ -53,6 +65,7 @@ export default function AddBooking({ id, teacherId, teacher, hour }) {
         },
         body: JSON.stringify({
           username: parentName,
+          classname: className,
         }),
       }
     );
@@ -84,7 +97,7 @@ export default function AddBooking({ id, teacherId, teacher, hour }) {
             <div className="data">{formattedHour}</div>
           </div>
           <div className="input-box">
-            <div className="title">Imię i nazwisko rodzica</div>
+            <div className="title">Imię i nazwisko ucznia</div>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -96,6 +109,18 @@ export default function AddBooking({ id, teacherId, teacher, hour }) {
                 onChange={(e) => setParentName(e.target.value)}
                 type="text"
               />
+              <div className="title">Klasa ucznia</div>
+              <select
+                onChange={(e) => setClassName(e.target.value)}
+                name="class"
+                id="class"
+              >
+                {classes.map((className: string) => (
+                  <option key={className} value={className}>
+                    {className}
+                  </option>
+                ))}
+              </select>
             </form>
           </div>
           <button className="book-meeting" onClick={bookMeeting}>
@@ -127,7 +152,7 @@ export default function AddBooking({ id, teacherId, teacher, hour }) {
         }
 
         div.input-box {
-          margin: 40px 20px;
+          margin: 20px 20px;
           div.title {
             font-weight: bold;
             font-size: 20px;
@@ -135,6 +160,7 @@ export default function AddBooking({ id, teacherId, teacher, hour }) {
           }
           input {
             margin-top: 20px;
+            margin-bottom: 20px;
             width: 100%;
             height: 60px;
             font-size: 14px;
@@ -152,7 +178,19 @@ export default function AddBooking({ id, teacherId, teacher, hour }) {
           height: 60px;
           font-size: 16px;
           font-weight: bold;
-          margin-bottom: 40px;
+          margin-bottom: 30px;
+        }
+
+        #class {
+          width: 100%;
+          height: 40px;
+          border: none;
+          border-radius: 10px;
+          background: @background-secondary;
+          box-sizing: border-box;
+          text-align: center;
+          font-weight: bold;
+          margin-top: 20px;
         }
       `}</style>
     </>
