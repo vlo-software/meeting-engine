@@ -56,6 +56,10 @@ export default function AddBooking({ id, teacherId, teacher, hour, classes }) {
       alert("Please enter the student's name first.");
       return;
     }
+    if (className == "") {
+      alert("Please select a class first.");
+      return;
+    }
     const rawReq = await fetch(
       `/api/meetings/${id}/teachers/${teacherId}/hours/${hour.id}`,
       {
@@ -115,6 +119,9 @@ export default function AddBooking({ id, teacherId, teacher, hour, classes }) {
                 name="class"
                 id="class"
               >
+                <option value="" selected disabled hidden>
+                  Wybierz klasę
+                </option>
                 {classes.map((className: string) => (
                   <option key={className} value={className}>
                     {className}
