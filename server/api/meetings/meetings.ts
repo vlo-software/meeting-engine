@@ -16,7 +16,14 @@ const idSchema = Joi.string()
   .regex(/[0-9a-fA-F]+/)
   .required();
 
+const bookerTokenSchema = Joi.string()
+  .length(36)
+  .regex(/[0-9a-fA-F-]+/)
+  .required();
+
 const userNameSchema = Joi.string().min(5).max(60).required();
+
+const emailSchema = Joi.string().email().required();
 
 const classNameSchema = Joi.string()
   .valid(...classes)
@@ -96,9 +103,27 @@ export const addBooking = async (req: Request, res: Response) => {
       await idSchema.validateAsync(hourId),
       await userNameSchema.validateAsync(username),
       await classNameSchema.validateAsync(classname),
-      req.signedCookies.bookerToken
+      req.signedCookies.bookerToken,
+      res.locals.emailTransporter,
+      await emailSchema.validateAsync(req.body.email)
     );
     res.json({ res: "Booking added." });
+  } catch (e: any) {
+    res.status(400).json({ res: e.message });
+  }
+};
+
+export const confirmBookingByLink = async (req: Request, res: Response) => {
+  const meetingService = new MeetingService();
+  const { id, teacherId, bookingId } = req.params;
+  try {
+    await meetingService.confirmBooking(
+      await idSchema.validateAsync(id),
+      await idSchema.validateAsync(teacherId),
+      await idSchema.validateAsync(bookingId),
+      res.locals.emailTransporter
+    );
+    res.json({ res: "Booking confirmed." });
   } catch (e: any) {
     res.status(400).json({ res: e.message });
   }
@@ -116,6 +141,21 @@ export const deleteBooking = async (req: Request, res: Response) => {
       await idSchema.validateAsync(id),
       await idSchema.validateAsync(teacherId),
       req.signedCookies.bookerToken
+    );
+    res.json({ res: "Booking removed." });
+  } catch (e: any) {
+    res.status(400).json({ res: e.message });
+  }
+};
+
+export const deleteBookingByLink = async (req: Request, res: Response) => {
+  const meetingService = new MeetingService();
+  const { id, teacherId, bookerToken } = req.params;
+  try {
+    await meetingService.deleteBooking(
+      await idSchema.validateAsync(id),
+      await idSchema.validateAsync(teacherId),
+      await bookerTokenSchema.validateAsync(bookerToken)
     );
     res.json({ res: "Booking removed." });
   } catch (e: any) {

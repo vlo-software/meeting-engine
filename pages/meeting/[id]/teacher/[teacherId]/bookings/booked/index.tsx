@@ -65,6 +65,37 @@ export default function BookedBooking() {
         />
         {error ? (
           <h1>Ten link jest niepoprawny lub może być uszkodzony!</h1>
+        ) : booking.status === "pending" ? (
+          <>
+            <h1>{teacher.teacherName}</h1>
+            <h3>
+              Twoje spotkanie zostało zarezerwowane na {booking.hour}{" "}
+              {booking.hourDisplayName.split(" - ")[0]}
+              {booking.date}
+            </h3>
+            <h3>
+              Aby potwierdzić, kliknij link wysłany na podany przez ciebie adres
+              e-mail.
+            </h3>
+            <div className="buttons">
+              <button
+                onClick={() => router.push(`/meeting/${id}`)}
+                className="btn-back"
+              >
+                Wróć do listy nauczycieli
+              </button>
+              <button
+                onClick={() =>
+                  cancelMeeting(id, teacherId, () => {
+                    router.push(`/meeting/${id}`);
+                  })
+                }
+                className="btn-cancel"
+              >
+                Odwołaj spotkanie
+              </button>
+            </div>
+          </>
         ) : (
           <>
             <h1 className="teacher-name">{teacher.teacherName}</h1>

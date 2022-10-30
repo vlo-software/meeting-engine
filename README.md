@@ -6,14 +6,23 @@ A simple parent-teacher meeting management application for the [V high school in
 
 #### Mongo variables
 
-- `MONGO_LOGIN` - Mongo username
-- `MOGNO_PASSWORD` - Mongo password
+- `MONGO_LOGIN` - Mongo username.
+- `MONGO_PASSWORD` - Mongo password.
 
 #### Auth variables
 
 - `ADMIN_USERNAME` - Admin username, must be between 4 and 30 chars long.
 - `ADMIN_PASSWORD` - Admin password, must be between 8 and 30 chars long.
 - `JWT_SECRET` - Secret used for signing json web tokens.
+
+#### SMTP variables
+
+- `SMTP_HOST` - The adress of your smtp server.
+- `SMTP_PORT` - The port of your smtp server.
+- `SMTP_USER` - The username of your smtp user.
+- `SMTP_PASSWORD` - The password of your smtp user.
+
+Do not configure these variables for testing, if left empty a test user will be created.
 
 ## Configuring the available teachers
 

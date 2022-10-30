@@ -50,14 +50,26 @@ export default function AddBooking({ id, teacherId, teacher, hour, classes }) {
 
   const [parentName, setParentName] = useState("");
   const [className, setClassName] = useState("");
+  const [email, setEmail] = useState("");
 
   async function bookMeeting() {
     if (parentName.length === 0) {
       alert("Please enter the student's name first.");
       return;
     }
-    if (className == "") {
+    if (className.length === 0) {
       alert("Please select a class first.");
+    }
+    if (email.length === 0) {
+      alert("Please enter the email address first.");
+      return;
+    }
+    if (
+      !email.match(
+        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      )
+    ) {
+      alert("Please enter a valid email address.");
       return;
     }
     const rawReq = await fetch(
@@ -70,6 +82,7 @@ export default function AddBooking({ id, teacherId, teacher, hour, classes }) {
         body: JSON.stringify({
           username: parentName,
           classname: className,
+          email,
         }),
       }
     );
@@ -128,6 +141,12 @@ export default function AddBooking({ id, teacherId, teacher, hour, classes }) {
                   </option>
                 ))}
               </select>
+              <div className="title">Adres email</div>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </form>
           </div>
           <button className="book-meeting" onClick={bookMeeting}>
@@ -198,6 +217,7 @@ export default function AddBooking({ id, teacherId, teacher, hour, classes }) {
           text-align: center;
           font-weight: bold;
           margin-top: 20px;
+          margin-bottom: 20px;
         }
       `}</style>
     </>

@@ -4,6 +4,7 @@ const { Types: MongooseTypes, Model } = mongoose;
 import { TeachersService } from "./teachersService";
 import { MeetingDTO } from "../models/dto/meeting";
 import { HourDTO } from "../models/dto/hours";
+import nodemailer from "nodemailer";
 
 export class MeetingService {
   private readonly model: typeof Model;
@@ -11,6 +12,36 @@ export class MeetingService {
   constructor() {
     this.model = Meeting;
     this.teacherService = new TeachersService();
+  }
+  private async sendEmail(
+    transporter: any,
+    email: string,
+    subject: string,
+    message: string,
+    html?: string
+  ): Promise<void> {
+    return await transporter.sendMail({
+      from: "VLO Meeting Engine <meeting@vlo.gda.pl>", // TODO: Make this configurable
+      to: email,
+      subject,
+      text: message,
+      html: html || message,
+    });
+  }
+  private async getRidOfStaleBookings(meeting: IMeeting) {
+    const now = new Date().getTime();
+    const minutesToWaitForConfirmation = 5; // TODO: Make this configurable
+    meeting.teachers = meeting.teachers.map((teacher) => {
+      teacher.bookings = teacher.bookings.filter(
+        (booking) =>
+          booking.status === "booked" ||
+          booking.createdAt.getTime() +
+            1000 * 60 * minutesToWaitForConfirmation >
+            now
+      );
+      return teacher;
+    });
+    await (meeting as any).save();
   }
   // Admin methods
   /**
@@ -37,12 +68,14 @@ export class MeetingService {
   public async getMeetingByIdUnsafe(
     meetingId: string
   ): Promise<IMeeting | null> {
-    const meeting = await this.model.findById(
+    let meeting = await this.model.findById(
       new MongooseTypes.ObjectId(meetingId)
     );
     if (meeting === null || meeting.endsAt < new Date().getTime()) {
       return null;
     }
+    await this.getRidOfStaleBookings(meeting);
+    meeting = await this.model.findById(new MongooseTypes.ObjectId(meetingId));
     return meeting ? (meeting.toObject() as IMeeting) : null;
   }
   /**
@@ -146,12 +179,14 @@ export class MeetingService {
    * @returns - Sanitised meeting ready to be presented to the user
    */
   public async getMeetingById(meetingId: string): Promise<MeetingDTO | null> {
-    const meeting: IMeeting = await this.model.findById(
+    let meeting: IMeeting = await this.model.findById(
       new MongooseTypes.ObjectId(meetingId)
     );
     if (meeting === null || meeting.endsAt < new Date().getTime()) {
       return null;
     }
+    await this.getRidOfStaleBookings(meeting);
+    meeting = await this.model.findById(new MongooseTypes.ObjectId(meetingId));
     return {
       startsAt: meeting.startsAt,
       endsAt: meeting.endsAt,
@@ -181,12 +216,14 @@ export class MeetingService {
     teacherId: string,
     bookerToken: string
   ): Promise<Array<HourDTO>> {
-    const meeting: IMeeting = await this.model.findOne({
+    let meeting: IMeeting = await this.model.findOne({
       _id: meetingId,
     });
     if (meeting.endsAt < new Date().getTime()) {
       throw Error("The meeting has ended, check your DB.");
     }
+    await this.getRidOfStaleBookings(meeting);
+    meeting = await this.model.findOne({ _id: meetingId });
     if (
       !meeting.teachers.some((teacher) => teacher._id.toString() === teacherId)
     ) {
@@ -225,12 +262,14 @@ export class MeetingService {
     teacherId: string,
     bookerToken
   ) {
-    const meeting: IMeeting = await this.model.findOne({
+    let meeting: IMeeting = await this.model.findOne({
       _id: meetingId,
     });
     if (meeting.endsAt < new Date().getTime()) {
       throw Error("The meeting has ended, check your DB.");
     }
+    await this.getRidOfStaleBookings(meeting);
+    meeting = await this.model.findOne({ _id: meetingId });
     if (
       !meeting.teachers.some((teacher) => teacher._id.toString() === teacherId)
     ) {
@@ -247,7 +286,7 @@ export class MeetingService {
       (booking) => booking.bookerToken === bookerToken
     );
     return {
-      ...booking,
+      status: booking.status,
       hourDisplayName: meeting.hours.find(
         (hour) => hour._id.toString() === booking.hourId.toString()
       ).displayName,
@@ -269,7 +308,9 @@ export class MeetingService {
     hourId: string,
     userName: string,
     className: string,
-    bookerToken: string
+    bookerToken: string,
+    transporter: any,
+    email: string
   ): Promise<void> {
     const meeting = await this.model.findOne({
       _id: meetingId,
@@ -309,11 +350,110 @@ export class MeetingService {
           userName,
           bookerToken,
           className,
+          status: "pending",
+          email,
         });
       }
       return teacher;
     });
     await meeting.save();
+    const booking = (await this.model.findOne({ _id: meetingId })).teachers
+      .find((teacher) => teacher._id.toString() === teacherId)
+      .bookings.find((booking) => booking.bookerToken === bookerToken);
+    const link = process.env.URL;
+    const info = await this.sendEmail(
+      transporter,
+      email,
+      "VLO - Potwierdź spotkanie",
+      `Próbujesz dodać spotkanie na ${hour.displayName.split(" - ")[0]} z ${
+        meeting.teachers.find((teacher) => teacher._id.toString() === teacherId)
+          .teacherName
+      }\nAby je potwierdzić, kliknij w link: ${link}/confirm/${meetingId}/teachers/${teacherId}/bookings/${
+        booking._id
+      }`,
+      `<div style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 400px"><img alt="School logo" src="https://cdn.discordapp.com/attachments/769540548834885673/1017472819740803153/SchoolLogo.svg"/><h2 style="color: #232c33; ">Próbujesz dodać spotkanie na ${
+        hour.displayName.split(" - ")[0]
+      } z ${
+        meeting.teachers.find((teacher) => teacher._id.toString() === teacherId)
+          .teacherName
+      }</h2><p><a style="text-decoration: none; color: white; background: #00c96f; padding: 20px 50px; font-weight: bold; font-size: 20px; border-radius: 20px" href="${link}/confirm/${meetingId}/teachers/${teacherId}/bookings/${
+        booking._id
+      }">Potwierdź spotkanie</a></p></div>`
+    );
+    console.log(nodemailer.getTestMessageUrl(info));
+  }
+  /**
+   * This is safe to use for normal users
+   * @param meetingId - Meeting _id from the database
+   * @param teacherId - Teacher _id from the database
+   * @param bookerToken - Token of the user getting the hours
+   * @returns - Array of available hours for the specified teacher in the specified meeting, throws if the user has already booked an hour
+   */
+  public async confirmBooking(
+    meetingId: string,
+    teacherId: string,
+    bookingId: string,
+    transporter: any
+  ): Promise<void> {
+    let meeting = await this.model.findOne({
+      _id: meetingId,
+    });
+    if (meeting.endsAt < new Date().getTime()) {
+      throw Error("The meeting has already ended.");
+    }
+    await this.getRidOfStaleBookings(meeting);
+    meeting = await this.model.findOne({ _id: meetingId });
+    if (
+      !meeting.teachers.some((teacher) => teacher._id.toString() === teacherId)
+    ) {
+      throw Error("The teacher with this id doesn't exist in this meeting.");
+    }
+    if (
+      !meeting.teachers
+        .find((teacher) => teacher._id.toString() === teacherId)
+        .bookings.find((booking) => booking._id.toString() === bookingId)
+    ) {
+      throw Error("This user doesn't have an hour reserved for this teacher.");
+    }
+    let hour = null;
+    let bookerToken = null;
+    let email = null;
+    meeting.teachers = meeting.teachers.map((teacher) => {
+      if (teacher._id.toString() === teacherId) {
+        teacher.bookings = teacher.bookings.map((booking) => {
+          if (booking._id.toString() === bookingId) {
+            booking.status = "booked";
+            hour = booking.hourId.toString();
+            bookerToken = booking.bookerToken;
+            email = booking.email;
+          }
+          return booking;
+        });
+      }
+      return teacher;
+    });
+    await meeting.save();
+
+    console.log(hour, bookerToken, email);
+    hour = meeting.hours.find((h) => h._id.toString() === hour);
+
+    const link = process.env.URL;
+    const info = await this.sendEmail(
+      transporter,
+      email,
+      "VLO - Zaplanowano nowe spotkanie",
+      `Dodano spotkanie na ${hour.displayName.split(" - ")[0]} z ${
+        meeting.teachers.find((teacher) => teacher._id.toString() === teacherId)
+          .teacherName
+      }\nAby je odwołać, kliknij w link: ${link}/cancel/${meetingId}/teachers/${teacherId}/booker/${bookerToken}"`,
+      `<div style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 400px"><img alt="School logo" src="https://cdn.discordapp.com/attachments/769540548834885673/1017472819740803153/SchoolLogo.svg"/><h2 style="color: #232c33; ">Dodano spotkanie na ${
+        hour.displayName.split(" - ")[0]
+      } z ${
+        meeting.teachers.find((teacher) => teacher._id.toString() === teacherId)
+          .teacherName
+      }</h2><p><a style="text-decoration: none; color: white; background: #FF5252; padding: 20px 50px; font-weight: bold; font-size: 20px; border-radius: 20px" href="${link}/cancel/${meetingId}/teachers/${teacherId}/booker/${bookerToken}">Odwołaj spotkanie</a></p></div>`
+    );
+    console.log(nodemailer.getTestMessageUrl(info));
   }
   /**
    * This is safe to use for normal users

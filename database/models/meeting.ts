@@ -2,12 +2,17 @@
 import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
-const bookingSchema = new Schema({
-  userName: { type: String, required: true },
-  className: { type: String, required: true },
-  hourId: { type: mongoose.Types.ObjectId, required: true },
-  bookerToken: { type: String, required: true },
-});
+const bookingSchema = new Schema(
+  {
+    userName: { type: String, required: true },
+    className: { type: String, required: true },
+    hourId: { type: mongoose.Types.ObjectId, required: true },
+    bookerToken: { type: String, required: true },
+    status: { type: String, enum: ["booked", "pending"], required: true },
+    email: { type: String, required: true },
+  },
+  { timestamps: true }
+);
 
 const teacherSchema = new Schema({
   teacherName: { type: String, required: true },
@@ -31,6 +36,10 @@ export interface IBooking {
   className: string;
   hourId: mongoose.Types.ObjectId;
   bookerToken: string;
+  status: "booked" | "pending";
+  email: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ITeacher {
