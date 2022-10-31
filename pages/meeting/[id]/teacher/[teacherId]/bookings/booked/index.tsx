@@ -20,8 +20,9 @@ async function cancelMeeting(id, teacherId, succsessCallback) {
     succsessCallback();
   } catch (error) {
     console.error(error);
+    alert(`Wystąpił błąd, kod: CB`);
     alert(
-      "ERROR: Failed to cancel the meeting.\nPlease contact the school to cancel the meeting.\nYou can also try again later."
+      "Nie udało się odwołać spotkania.\nSpróbuj ponownie lub skontaktuj się z administratorem."
     );
   }
 }

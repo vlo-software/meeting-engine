@@ -12,7 +12,13 @@ async function getHours(id, teacherId) {
     );
     const data = await rawReq.json();
     return {
-      hours: data.hours,
+      hours: data.hours.filter((h) => {
+        const start = h.displayName.split(" - ")[0];
+        const startDate = new Date();
+        startDate.setHours(parseInt(start.split(":")[0]));
+        startDate.setMinutes(parseInt(start.split(":")[1]));
+        return startDate > new Date();
+      }),
       error: null,
     };
   } catch (error) {
@@ -91,25 +97,31 @@ export default function Bookings() {
         ) : (
           <>
             <h1>Wybierz godzinę</h1>
-            {hours.map((hour) => (
-              <Card key={hour.displayName}>
-                <Link
-                  href={`/meeting/${id}/teacher/${teacherId}/bookings/${hour.id}`}
-                  passHref
-                >
-                  <div className="card-content">
-                    <h3 className="hour">{hour.displayName}</h3>
-                    <i className="bi bi-chevron-right"></i>
-                  </div>
-                </Link>
-              </Card>
-            ))}
+            <div className="cards">
+              {hours.map((hour) => (
+                <Card key={hour.displayName}>
+                  <Link
+                    href={`/meeting/${id}/teacher/${teacherId}/bookings/${hour.id}`}
+                    passHref
+                  >
+                    <div className="card-content">
+                      <h3 className="hour">{hour.displayName}</h3>
+                      <i className="bi bi-chevron-right"></i>
+                    </div>
+                  </Link>
+                </Card>
+              ))}
+            </div>
           </>
         )}
       </div>
       <style jsx>
         {`
           @import "styles/index.less";
+
+          .cards {
+            margin-bottom: 60px;
+          }
 
           .card-content {
             display: grid;

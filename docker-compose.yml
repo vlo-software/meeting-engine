@@ -11,6 +11,14 @@ services:
       - meeting-engineDB:/data/configdb
     ports:
       - 27017:27017
+  postfix:
+    image: boky/postfix
+    restart: always
+    ports:
+      - 587:587
+    environment:
+      HOSTNAME: ${SMTP_HOST}
+      ALLOWED_SENDER_DOMAINS: ${SMTP_ALLOWED_SENDER_DOMAINS}
 
 volumes:
   meeting-engineDB:

@@ -20,8 +20,9 @@ export class MeetingService {
     message: string,
     html?: string
   ): Promise<void> {
+    console.log(process.env.SMTP_ALLOWED_SENDER_DOMAINS);
     return await transporter.sendMail({
-      from: "VLO Meeting Engine <meeting@vlo.gda.pl>", // TODO: Make this configurable
+      from: `VLO Meeting Engine <meeting@${process.env.SMTP_ALLOWED_SENDER_DOMAINS}>`,
       to: email,
       subject,
       text: message,
@@ -30,7 +31,9 @@ export class MeetingService {
   }
   private async getRidOfStaleBookings(meeting: IMeeting) {
     const now = new Date().getTime();
-    const minutesToWaitForConfirmation = 5; // TODO: Make this configurable
+    const minutesToWaitForConfirmation: number = parseInt(
+      process.env.MAX_CONFIRM_WAIT ?? "5"
+    );
     meeting.teachers = meeting.teachers.map((teacher) => {
       teacher.bookings = teacher.bookings.filter(
         (booking) =>
@@ -102,7 +105,8 @@ export class MeetingService {
     endsAt: number;
     teacherIds: Array<number>;
   }): Promise<void> {
-    const BOOKING_LENGTH = 10 * 60 * 1000; // TODO: Make this configurable
+    const BOOKING_LENGTH =
+      parseInt(process.env.BOOKING_LENGTH ?? "10") * 60 * 1000;
     const teachers = this.teacherService.getTeachersByIds(teacherIds);
     const duration = endsAt - startsAt;
     if (duration < 0) {
@@ -371,14 +375,14 @@ export class MeetingService {
       }\nAby je potwierdzić, kliknij w link: ${link}/confirm/${meetingId}/teachers/${teacherId}/bookings/${
         booking._id
       }`,
-      `<div style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 400px"><img alt="School logo" src="https://cdn.discordapp.com/attachments/769540548834885673/1017472819740803153/SchoolLogo.svg"/><h2 style="color: #232c33; ">Próbujesz dodać spotkanie na ${
+      `<table width = "100%" border = "0"><tr><td colspan = "2" bgcolor = "#FFF"><img alt="School logo" title="School Logo" style="display:block;margin-left: auto;margin-right: auto;" width="200px" height="152px" src="https://cdn.discordapp.com/attachments/769540548834885673/1036654603531468800/SchoolLogo.png"/></td></tr><tr valign = "top"><td bgcolor = "#FFF" style="text-align: center; font-family: sans-serif" width = "100" height = "200"><h2 style="color: #232c33; ">Próbujesz dodać spotkanie na ${
         hour.displayName.split(" - ")[0]
       } z ${
         meeting.teachers.find((teacher) => teacher._id.toString() === teacherId)
           .teacherName
-      }</h2><p><a style="text-decoration: none; color: white; background: #00c96f; padding: 20px 50px; font-weight: bold; font-size: 20px; border-radius: 20px" href="${link}/confirm/${meetingId}/teachers/${teacherId}/bookings/${
+      }</h2><br/><br/><a style="text-decoration: none; color: white; background: #00c96f; padding: 20px 50px; font-weight: bold; font-size: 20px; border-radius: 20px" href="${link}/confirm/${meetingId}/teachers/${teacherId}/bookings/${
         booking._id
-      }">Potwierdź spotkanie</a></p></div>`
+      }">Potwierdź spotkanie</a></td></tr><tr><td colspan = "2" bgcolor = "#fff"><center><small style="font-family: sans-serif">Copyright © 2022 VLO</small></center></td></tr></table>`
     );
     console.log(nodemailer.getTestMessageUrl(info));
   }
@@ -446,12 +450,12 @@ export class MeetingService {
         meeting.teachers.find((teacher) => teacher._id.toString() === teacherId)
           .teacherName
       }\nAby je odwołać, kliknij w link: ${link}/cancel/${meetingId}/teachers/${teacherId}/booker/${bookerToken}"`,
-      `<div style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 400px"><img alt="School logo" src="https://cdn.discordapp.com/attachments/769540548834885673/1017472819740803153/SchoolLogo.svg"/><h2 style="color: #232c33; ">Dodano spotkanie na ${
+      `<table width = "100%" border = "0"><tr><td colspan = "2" bgcolor = "#FFF"><img alt="School logo" title="School Logo" style="display:block;margin-left: auto;margin-right: auto;" width="200px" height="152px" src="https://cdn.discordapp.com/attachments/769540548834885673/1036654603531468800/SchoolLogo.png"/></td></tr><tr valign = "top"><td bgcolor = "#FFF" style="text-align: center; font-family: sans-serif" width = "100" height = "200"><h2 style="color: #232c33; ">Dodano spotkanie na ${
         hour.displayName.split(" - ")[0]
       } z ${
         meeting.teachers.find((teacher) => teacher._id.toString() === teacherId)
           .teacherName
-      }</h2><p><a style="text-decoration: none; color: white; background: #FF5252; padding: 20px 50px; font-weight: bold; font-size: 20px; border-radius: 20px" href="${link}/cancel/${meetingId}/teachers/${teacherId}/booker/${bookerToken}">Odwołaj spotkanie</a></p></div>`
+      }</h2><br/><br/><a style="text-decoration: none; color: white; background: #FF5252; padding: 20px 50px; font-weight: bold; font-size: 20px; border-radius: 20px" href="${link}/cancel/${meetingId}/teachers/${teacherId}/booker/${bookerToken}">Odwołaj spotkanie</a></td></tr><tr><td colspan = "2" bgcolor = "#fff"><center><small style="font-family: sans-serif">Copyright © 2022 VLO</small></center></td></tr></table>`
     );
     console.log(nodemailer.getTestMessageUrl(info));
   }

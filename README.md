@@ -21,6 +21,12 @@ A simple parent-teacher meeting management application for the [V high school in
 - `SMTP_PORT` - The port of your smtp server.
 - `SMTP_USER` - The username of your smtp user.
 - `SMTP_PASSWORD` - The password of your smtp user.
+- `SMTP_ALLOWED_SENDER_DOMAINS` - The allowed sender domains for postfix.
+
+#### Meeting engine variables
+
+- `MAX_CONFIRM_WAIT` - The maximum wait time for the confirmation of a meeting.
+- `BOOKING_LENGTH` - The length in minutes of a single parent-teacher meeting.
 
 Do not configure these variables for testing, if left empty a test user will be created.
 

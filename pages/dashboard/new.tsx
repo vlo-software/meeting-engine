@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { ConfigTeacherDTO } from "../../server/models/dto/teacher";
 
 export async function getServerSideProps() {
-  const res = await fetch("http://localhost:3000/api/teachers"); // TODO: change to real url
+  const res = await fetch(`${process.env.URL}/api/teachers`);
   const teachers = await res.json();
 
   return {

@@ -74,6 +74,12 @@ export default function Meeting() {
         {`
           @import "styles/index.less";
 
+          @media (max-width: 768px) {
+            h1 {
+              font-size: 30px;
+            }
+          }
+
           h2 {
             font-weight: 700;
             font-size: 20px;
