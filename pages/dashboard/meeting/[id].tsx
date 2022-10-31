@@ -139,7 +139,7 @@ export default function Meeting() {
       </div>
       <style jsx>
         {`
-          @import "styles/index.less";
+          @import "styles/index.scss";
 
           .card-content {
             display: grid;
@@ -149,15 +149,15 @@ export default function Meeting() {
             text-align: left;
             height: 70px;
             line-height: 70px;
-            color: @text;
+            color: $text;
             text-decoration: none;
             h3 {
               font-size: 18px;
               margin: 0 10px;
             }
             .bi-chevron-right {
-              color: @text;
-              -webkit-text-stroke: 2px @text;
+              color: $text;
+              -webkit-text-stroke: 2px $text;
               font-size: 18px;
             }
             &:hover {

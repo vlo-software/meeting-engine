@@ -102,14 +102,14 @@ export default function Teacher() {
         })}
       </div>
       <style jsx>{`
-        @import "styles/index.less";
+        @import "styles/index.scss";
 
         .card-content {
           width: 100%;
           height: 100%;
           text-align: left;
           min-height: 70px;
-          color: @text;
+          color: $text;
           text-decoration: none;
           .card-content-container {
             width: 100%;

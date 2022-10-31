@@ -123,7 +123,7 @@ export default function New(props) {
       </div>
       <style jsx>
         {`
-          @import "styles/index.less";
+          @import "styles/index.scss";
 
           input[type="time"] {
             width: calc(50% - 28px);
@@ -152,7 +152,7 @@ export default function New(props) {
             height: 30px;
             font-family: "Poppins", sans-serif;
             font-weight: 700;
-            color: @text;
+            color: $text;
             line-height: 30px;
             margin: 10px 0;
             &:first-child {

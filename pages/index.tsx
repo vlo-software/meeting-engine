@@ -10,7 +10,7 @@ export default function Landing() {
         </div>
       </div>
       <style jsx>{`
-        @import "styles/index.less";
+        @import "styles/index.scss";
 
         .center-text {
           display: flex;

@@ -49,12 +49,12 @@ export default function Home() {
       </div>
       <style jsx>
         {`
-          @import "styles/index.less";
+          @import "styles/index.scss";
 
           h2 {
             font-weight: 700;
             font-size: 20px;
-            color: @secondary;
+            color: $secondary;
           }
 
           .content {

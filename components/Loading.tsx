@@ -5,7 +5,7 @@ export default function Loading() {
         <div className="lds-dual-ring"></div>
       </div>
       <style jsx>{`
-        @import "styles/index.less";
+        @import "styles/index.scss";
 
         .loading-container {
           height: 100vh;
@@ -26,8 +26,8 @@ export default function Loading() {
           height: 64px;
           margin: 8px;
           border-radius: 50%;
-          border: 8px solid @important;
-          border-color: @important transparent @important transparent;
+          border: 8px solid $important;
+          border-color: $important transparent $important transparent;
           animation: lds-dual-ring 1.2s linear infinite;
         }
         @keyframes lds-dual-ring {

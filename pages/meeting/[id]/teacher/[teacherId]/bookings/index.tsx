@@ -117,7 +117,7 @@ export default function Bookings() {
       </div>
       <style jsx>
         {`
-          @import "styles/index.less";
+          @import "styles/index.scss";
 
           .cards {
             margin-bottom: 60px;
@@ -131,13 +131,13 @@ export default function Bookings() {
             text-align: left;
             height: 70px;
             line-height: 70px;
-            color: @text;
+            color: $text;
             text-decoration: none;
             cursor: pointer;
             .bi-chevron-right {
               margin: 0 10px;
-              color: @text;
-              -webkit-text-stroke: 2px @text;
+              color: $text;
+              -webkit-text-stroke: 2px $text;
               font-size: 18px;
               text-align: right;
             }

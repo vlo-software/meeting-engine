@@ -72,7 +72,7 @@ export default function Meeting() {
       </div>
       <style jsx>
         {`
-          @import "styles/index.less";
+          @import "styles/index.scss";
 
           @media (max-width: 768px) {
             h1 {
@@ -83,7 +83,7 @@ export default function Meeting() {
           h2 {
             font-weight: 700;
             font-size: 20px;
-            color: @secondary;
+            color: $secondary;
           }
 
           .card-content {
@@ -94,15 +94,15 @@ export default function Meeting() {
             text-align: left;
             height: 70px;
             line-height: 70px;
-            color: @text;
+            color: $text;
             text-decoration: none;
             h3 {
               font-size: 18px;
               margin: 0 10px;
             }
             .bi-chevron-right {
-              color: @text;
-              -webkit-text-stroke: 2px @text;
+              color: $text;
+              -webkit-text-stroke: 2px $text;
               font-size: 18px;
             }
             &:hover {

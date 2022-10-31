@@ -190,7 +190,7 @@ export default function AddBooking({ id, teacherId, teacher, hour, classes }) {
         </div>
       </div>
       <style jsx>{`
-        @import "styles/index.less";
+        @import "styles/index.scss";
 
         .main {
           margin-bottom: 50px;
@@ -232,7 +232,7 @@ export default function AddBooking({ id, teacherId, teacher, hour, classes }) {
             font-weight: bold;
             padding: 20px;
             box-sizing: border-box;
-            background: @background-secondary;
+            background: $background-secondary;
             border: none;
             border-radius: 10px;
           }
@@ -251,7 +251,7 @@ export default function AddBooking({ id, teacherId, teacher, hour, classes }) {
           height: 40px;
           border: none;
           border-radius: 10px;
-          background: @background-secondary;
+          background: $background-secondary;
           color: black;
           box-sizing: border-box;
           text-align: center;

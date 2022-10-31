@@ -64,7 +64,7 @@ export default function Login() {
       </div>
       <style jsx>
         {`
-          @import "styles/index.less";
+          @import "styles/index.scss";
 
           .login-card {
             input[type="text"],

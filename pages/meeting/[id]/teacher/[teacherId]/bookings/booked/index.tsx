@@ -127,7 +127,7 @@ export default function BookedBooking() {
       </div>
       <style jsx>
         {`
-          @import "styles/index.less";
+          @import "styles/index.scss";
 
           h1.teacher-name {
             @media (max-width: 768px) {

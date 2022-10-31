@@ -1,4 +1,4 @@
-@import "./colors.less";
+@import "./colors.scss";
 
 button {
   border: 0;
@@ -6,11 +6,11 @@ button {
   display: inline-block;
   width: calc(100% - 60px);
   max-width: 400px;
-  background: @important;
+  background: $important;
   margin: 10px 20px;
   border-radius: 10px;
   height: 50px;
-  color: @text;
+  color: $text;
   font-size: 20px;
   font-weight: 900;
   line-height: 50px;
@@ -32,7 +32,7 @@ button {
 h1 {
   font-weight: 800;
   font-size: 36px;
-  color: @text;
+  color: $text;
 }
 
 input[type="checkbox"] {
@@ -46,7 +46,7 @@ input[type="checkbox"] {
   background: #c4c4c4;
   border-radius: 100%;
   &:checked {
-    background: darken(@tertiary, 30%);
+    background: darken($tertiary, 30%);
     background-image: url("data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjQ0OCIgaGVpZ2h0PSI0NDgiIHZpZXdCb3g9IjAgMCA0NDggNDQ4Ij4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQxNy43NSAxNDEuNWMwIDYuMjUtMi41IDEyLjUtNyAxN2wtMjE1IDIxNWMtNC41IDQuNS0xMC43NSA3LTE3IDdzLTEyLjUtMi41LTE3LTdsLTEyNC41LTEyNC41Yy00LjUtNC41LTctMTAuNzUtNy0xN3MyLjUtMTIuNSA3LTE3bDM0LTM0YzQuNS00LjUgMTAuNzUtNyAxNy03czEyLjUgMi41IDE3IDdsNzMuNSA3My43NSAxNjQtMTY0LjI1YzQuNS00LjUgMTAuNzUtNyAxNy03czEyLjUgMi41IDE3IDdsMzQgMzRjNC41IDQuNSA3IDEwLjc1IDcgMTd6Ij48L3BhdGg+Cjwvc3ZnPgo=");
     background-repeat: no-repeat;
     background-position: 4px 4px;
@@ -68,8 +68,8 @@ input[type="time"] {
   height: 30px;
   font-family: "Poppins", sans-serif;
   font-weight: 700;
-  color: @text;
-  outline-color: @text;
+  color: $text;
+  outline-color: $text;
   // Fix on iOS devices
   -webkit-appearance: textfield;
   -moz-appearance: textfield;
