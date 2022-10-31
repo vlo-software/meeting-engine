@@ -14,11 +14,19 @@ services:
   postfix:
     image: boky/postfix
     restart: always
-    ports:
-      - 587:587
     environment:
       HOSTNAME: ${SMTP_HOST}
       ALLOWED_SENDER_DOMAINS: ${SMTP_ALLOWED_SENDER_DOMAINS}
+  meeting:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+      - postfix
+    ports:
+      - 3000:3000
+    restart: always
 
 volumes:
   meeting-engineDB:

@@ -41,7 +41,9 @@ import { MeetingRouter } from "./meetings";
 const app = express();
 
 const setup = async () => {
-  const connectionUri = `mongodb://${process.env.MONGO_LOGIN}:${process.env.MONGO_PASSWORD}@localhost:27017`;
+  const connectionUri = `mongodb://${process.env.MONGO_LOGIN}:${
+    process.env.MONGO_PASSWORD
+  }@${process.env.MONGO_IP ?? "localhost"}:27017`;
   await mongoose.connect(connectionUri);
   app.use(express.json());
   app.use(cookieParser(process.env.JWT_SECRET));
