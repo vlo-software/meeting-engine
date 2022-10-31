@@ -58,8 +58,9 @@ const setup = async () => {
   app.use("/api/users", LoginRouter);
   app.use("/api/admin", AdminRouter);
   app.use("/api/meetings", MeetingRouter);
+  return app;
 };
 
 setup();
 
-export default app;
+export default setup;
