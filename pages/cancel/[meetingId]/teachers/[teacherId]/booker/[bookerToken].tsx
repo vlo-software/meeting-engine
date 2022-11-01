@@ -50,7 +50,11 @@ export default function CancelBooking() {
           height: "100vh",
         }}
       >
-        {loading ? <Loading /> : <h1>Spotkanie zostało odwołane</h1>}
+        {loading ? (
+          <Loading />
+        ) : (
+          <h1 style={{ padding: "15px" }}>Spotkanie zostało odwołane</h1>
+        )}
       </div>
     </>
   );
