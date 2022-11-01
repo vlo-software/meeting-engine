@@ -389,7 +389,7 @@ export class MeetingService {
       } z ${
         meeting.teachers.find((teacher) => teacher._id.toString() === teacherId)
           .teacherName
-      }</h2></center><br/><br/><center><a style="text-decoration: none; color: white; background: #00c96f; padding: 20px 50px; font-weight: bold; font-size: 20px; border-radius: 20px;" href="${link}/confirm/${meetingId}/teachers/${teacherId}/bookings/${
+      }</h2></center><br/><br/><center><a style="text-decoration: none; color: white; background: #00c96f; padding: 18px 40px; font-weight: bold; font-size: 18px; border-radius: 20px;" href="${link}/confirm/${meetingId}/teachers/${teacherId}/bookings/${
         booking._id
       }">Potwierdź spotkanie</a></center></td></tr><tr><td colspan = "2" bgcolor = "#fff"><center><small style="font-family: sans-serif">Copyright © 2022 VLO</small></center></td></tr></table>`
     );
@@ -473,7 +473,7 @@ export class MeetingService {
       } z ${
         meeting.teachers.find((teacher) => teacher._id.toString() === teacherId)
           .teacherName
-      }</h2><br/><br/><a style="text-decoration: none; color: white; background: #FF5252; padding: 20px 50px; font-weight: bold; font-size: 20px; border-radius: 20px" href="${link}/cancel/${meetingId}/teachers/${teacherId}/booker/${bookerToken}">Odwołaj spotkanie</a></td></tr><tr><td colspan = "2" bgcolor = "#fff"><center><small style="font-family: sans-serif">Copyright © 2022 VLO</small></center></td></tr></table>`
+      }</h2><br/><br/><a style="text-decoration: none; color: white; background: #FF5252; padding: 18px 40px; font-weight: bold; font-size: 18px; border-radius: 20px" href="${link}/cancel/${meetingId}/teachers/${teacherId}/booker/${bookerToken}">Odwołaj spotkanie</a></td></tr><tr><td colspan = "2" bgcolor = "#fff"><center><small style="font-family: sans-serif">Copyright © 2022 VLO</small></center></td></tr></table>`
     );
     console.log(nodemailer.getTestMessageUrl(info));
   }
