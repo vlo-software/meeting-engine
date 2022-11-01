@@ -17,7 +17,7 @@ function generateExcel(meeting) {
       const booking = teacher.bookings.find(
         (booking) => booking.hourId === hour._id
       );
-      row.push(booking ? booking.userName : "");
+      row.push(booking ? `${booking.userName} ${booking.className}` : "");
     });
     data.push(row);
   });

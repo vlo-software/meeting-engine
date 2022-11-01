@@ -92,7 +92,11 @@ export default function Teacher() {
                   onClick={() => (booking ? cancelBooking(booking._id) : {})}
                 >
                   <div className="card-content-container">
-                    <h3>{booking?.userName || "Wolny termin"}</h3>
+                    <h3>
+                      {booking?.userName
+                        ? `${booking.userName} ${booking.className}`
+                        : "Wolny termin"}
+                    </h3>
                     <h3 className="hour">{hour.displayName}</h3>
                   </div>
                 </div>

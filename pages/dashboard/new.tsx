@@ -30,9 +30,17 @@ export default function New(props) {
 
   const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
   const [start, setStart] = useState(
-    new Date().toISOString().substring(11, 16)
+    (() => {
+      const date = new Date();
+      return `${date.getHours()}:${date.getMinutes()}`;
+    })()
   );
-  const [end, setEnd] = useState(new Date().toISOString().substring(11, 16));
+  const [end, setEnd] = useState(
+    (() => {
+      const date = new Date(new Date().getTime() + 60 * 60 * 1000);
+      return `${date.getHours()}:${date.getMinutes()}`;
+    })()
+  );
 
   const addMeeting = async () => {
     const [startHours, startMinutes] = start.split(":").map((e) => parseInt(e));

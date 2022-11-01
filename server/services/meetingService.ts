@@ -375,14 +375,23 @@ export class MeetingService {
       }\nAby je potwierdzić, kliknij w link: ${link}/confirm/${meetingId}/teachers/${teacherId}/bookings/${
         booking._id
       }`,
-      `<table width = "100%" border = "0"><tr><td colspan = "2" bgcolor = "#FFF"><img alt="School logo" title="School Logo" style="display:block;margin-left: auto;margin-right: auto;" width="200px" height="152px" src="https://cdn.discordapp.com/attachments/769540548834885673/1036654603531468800/SchoolLogo.png"/></td></tr><tr valign = "top"><td bgcolor = "#FFF" style="text-align: center; font-family: sans-serif" width = "100" height = "200"><h2 style="color: #232c33; ">Próbujesz dodać spotkanie na ${
+      `
+      <style>
+        * {
+          -webkit-text-size-adjust: none;
+        }
+        a {
+          white-space: nowrap;
+        }
+      </style> 
+      <table width = "100%" border = "0"><tr><td colspan = "2" bgcolor = "#FFF"><img alt="School logo" title="School Logo" style="display:block;margin-left: auto;margin-right: auto;" width="200px" height="152px" src="https://cdn.discordapp.com/attachments/769540548834885673/1036654603531468800/SchoolLogo.png"/></td></tr><tr valign = "top"><td bgcolor = "#FFF" style="text-align: center; font-family: sans-serif" width = "100" height = "400"><center><h2 style="color: #232c33; text-align: center">Próbujesz dodać spotkanie na ${
         hour.displayName.split(" - ")[0]
       } z ${
         meeting.teachers.find((teacher) => teacher._id.toString() === teacherId)
           .teacherName
-      }</h2><br/><br/><a style="text-decoration: none; color: white; background: #00c96f; padding: 20px 50px; font-weight: bold; font-size: 20px; border-radius: 20px" href="${link}/confirm/${meetingId}/teachers/${teacherId}/bookings/${
+      }</h2></center><br/><br/><center><a style="text-decoration: none; color: white; background: #00c96f; padding: 20px 50px; font-weight: bold; font-size: 20px; border-radius: 20px;" href="${link}/confirm/${meetingId}/teachers/${teacherId}/bookings/${
         booking._id
-      }">Potwierdź spotkanie</a></td></tr><tr><td colspan = "2" bgcolor = "#fff"><center><small style="font-family: sans-serif">Copyright © 2022 VLO</small></center></td></tr></table>`
+      }">Potwierdź spotkanie</a></center></td></tr><tr><td colspan = "2" bgcolor = "#fff"><center><small style="font-family: sans-serif">Copyright © 2022 VLO</small></center></td></tr></table>`
     );
     console.log(nodemailer.getTestMessageUrl(info));
   }
@@ -450,7 +459,16 @@ export class MeetingService {
         meeting.teachers.find((teacher) => teacher._id.toString() === teacherId)
           .teacherName
       }\nAby je odwołać, kliknij w link: ${link}/cancel/${meetingId}/teachers/${teacherId}/booker/${bookerToken}"`,
-      `<table width = "100%" border = "0"><tr><td colspan = "2" bgcolor = "#FFF"><img alt="School logo" title="School Logo" style="display:block;margin-left: auto;margin-right: auto;" width="200px" height="152px" src="https://cdn.discordapp.com/attachments/769540548834885673/1036654603531468800/SchoolLogo.png"/></td></tr><tr valign = "top"><td bgcolor = "#FFF" style="text-align: center; font-family: sans-serif" width = "100" height = "200"><h2 style="color: #232c33; ">Dodano spotkanie na ${
+      `
+      <style>
+        * {
+          -webkit-text-size-adjust: none;
+        }
+        a {
+          white-space: nowrap;
+        }
+      </style> 
+      <table width = "100%" border = "0"><tr><td colspan = "2" bgcolor = "#FFF"><img alt="School logo" title="School Logo" style="display:block;margin-left: auto;margin-right: auto;" width="200px" height="152px" src="https://cdn.discordapp.com/attachments/769540548834885673/1036654603531468800/SchoolLogo.png"/></td></tr><tr valign = "top"><td bgcolor = "#FFF" style="text-align: center; font-family: sans-serif" width = "100" height = "200"><h2 style="color: #232c33; ">Dodano spotkanie na ${
         hour.displayName.split(" - ")[0]
       } z ${
         meeting.teachers.find((teacher) => teacher._id.toString() === teacherId)
