@@ -32,13 +32,19 @@ export default function New(props) {
   const [start, setStart] = useState(
     (() => {
       const date = new Date();
-      return `${date.getHours()}:${date.getMinutes()}`;
+      return `${date.getHours().toString().padStart(2, "0")}:${date
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}`;
     })()
   );
   const [end, setEnd] = useState(
     (() => {
       const date = new Date(new Date().getTime() + 60 * 60 * 1000);
-      return `${date.getHours()}:${date.getMinutes()}`;
+      return `${date.getHours().toString().padStart(2, "0")}:${date
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}`;
     })()
   );
 
