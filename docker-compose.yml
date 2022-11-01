@@ -21,6 +21,8 @@ services:
     build: .
     env_file:
       - .env
+    environment:
+      - TZ=Europe/Warsaw
     depends_on:
       - mongo
       - postfix

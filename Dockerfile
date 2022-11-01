@@ -12,4 +12,6 @@ EXPOSE 3000
 
 ENV MONGO_IP=mongo
 
+RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
+
 CMD ["yarn", "start"]
