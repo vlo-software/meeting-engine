@@ -240,7 +240,7 @@ export class MeetingService {
     ) {
       throw Error("This user already has an hour booked for this teacher.");
     }
-    return meeting.hours
+    const hours = meeting.hours
       .filter(
         (hour) =>
           !meeting.teachers
@@ -253,6 +253,17 @@ export class MeetingService {
         id: hour._id.toString(),
         displayName: hour.displayName,
       }));
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+    return meeting.endsAt > endOfToday.getTime()
+      ? hours
+      : hours.filter((h) => {
+          const start = h.displayName.split(" - ")[0];
+          const startDate = new Date();
+          startDate.setHours(parseInt(start.split(":")[0]));
+          startDate.setMinutes(parseInt(start.split(":")[1]));
+          return startDate > new Date();
+        });
   }
   /**
    * This is safe to use for normal users

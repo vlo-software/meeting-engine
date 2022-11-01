@@ -12,13 +12,7 @@ async function getHours(id, teacherId) {
     );
     const data = await rawReq.json();
     return {
-      hours: data.hours.filter((h) => {
-        const start = h.displayName.split(" - ")[0];
-        const startDate = new Date();
-        startDate.setHours(parseInt(start.split(":")[0]));
-        startDate.setMinutes(parseInt(start.split(":")[1]));
-        return startDate > new Date();
-      }),
+      hours: data.hours,
       error: null,
     };
   } catch (error) {
